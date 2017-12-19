@@ -113,8 +113,17 @@ public class RobotRace extends Base {
         float g = 3.5f;
         raceTracks[1] = new BezierTrack(
                 
-            new Vector[] {}
-       
+            new Vector[] { new Vector(-15f, 0f, 0f),
+                           new Vector(-10f, -5f, 0f),
+                           new Vector(-5f, -5f, 0f),
+                           new Vector(0f, 0f, 0f),
+                           new Vector(5f, 5f, 0f),
+                           new Vector(10f, 5f, 0f),
+                           new Vector(15f, 0f, 0f),
+                           new Vector(20f, -5f, 0f),
+                           new Vector(25f, -5f, 0f),
+                           new Vector(40f, 0f, 0f)
+            }       
         );
         
         // Initialize the terrain
@@ -168,13 +177,15 @@ public class RobotRace extends Base {
         // Set the perspective.
         glu.gluPerspective(45, (float)gs.w / (float)gs.h, 0.1*gs.vDist, 10*gs.vDist);
         
+        // Add light source
+        gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[]{10f,0f,10f,1f}, 0);
+        gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0.6f,0f,0f,1f}, 0);
+        gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[]{1f,1f,1f,1f}, 0);
+        
         // Set camera.
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
-        
-        // Add light source
-        gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0f,0f,0f,1f}, 0);
-               
+  
         // Update the view according to the camera mode and robot of interest.
         // For camera modes 1 to 4, determine which robot to focus on.
         camera.update(gs, robots[0]);
@@ -208,13 +219,13 @@ public class RobotRace extends Base {
         
 
     // Draw hierarchy example.
-        drawHierarchy();
+        //drawHierarchy();
         
         // Draw the axis frame.
         if (gs.showAxes) {
             drawAxisFrame();
         }
-        
+        DrawTrackBounds();
         // Draw the (first) robot.
         gl.glUseProgram(robotShader.getProgramID()); 
         
@@ -239,13 +250,55 @@ public class RobotRace extends Base {
      */
     public void drawAxisFrame() {
 
+        gl.glColor3f(1f, 0f, 0f);
+        gl.glPushMatrix();
+        gl.glTranslatef((float)camera.center.x(), (float)camera.center.y(), (float)camera.center.z());
+        glut.glutSolidSphere(0.15f, 24, 12);
+        gl.glPopMatrix();
+        
+        gl.glColor3f(1f, 1f, 0f);
+        glut.glutSolidSphere(0.3f, 24, 12);
+        gl.glColor3f(1f, 0f, 0f);
+        gl.glPushMatrix();
+        gl.glRotatef(90f, 0f, 1f, 0f);
+        drawArrow();
+        gl.glPopMatrix();
+        gl.glColor3f(0f, 1f, 0f);
+        gl.glPushMatrix();
+        gl.glRotatef(-90f, 1f, 0f, 0f);
+        drawArrow();
+        gl.glPopMatrix();
+        gl.glColor3f(0f, 0f, 1f);
+        drawArrow();
+    }
+    
+    void DrawTrackBounds () {
+    
+        gl.glBegin(GL_LINES);
+        
+        gl.glVertex3f(-20, -20, 0);
+        gl.glVertex3f(20, -20, 0);
+        
+        gl.glVertex3f(20, -20, 0);
+        gl.glVertex3f(20, 20, 0);
+        
+        gl.glVertex3f(20, 20, 0);
+        gl.glVertex3f(-20, 20, 0);
+        
+        gl.glVertex3f(-20, 20, 0);
+        gl.glVertex3f(-20, -20, 0);
+    
+        gl.glEnd();
+        
     }
     
     /**
      * Draws a single arrow
      */
-    public void drawArrow() {  
-
+    public void drawArrow() {
+        glut.glutSolidCylinder(0.05f, 1f, 12, 6);
+        gl.glTranslatef(0f, 0f, 1f);
+        glut.glutSolidCone(0.2f, 0.5f, 12, 6);
     }
  
     /**

@@ -19,7 +19,7 @@ class Terrain {
      * Draws the terrain.
      */
     public void draw(GL2 gl, GLU glu, GLUT glut) {
-
+        
     }
     
 }

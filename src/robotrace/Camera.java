@@ -6,7 +6,7 @@ package robotrace;
 class Camera {
 
     /** The position of the camera. */
-    public Vector eye = new Vector(3f, 6f, 5f);
+    public Vector eye = new Vector(20f, 20f, 0f);
 
     /** The point to which the camera is looking. */
     public Vector center = Vector.O;
@@ -37,6 +37,14 @@ class Camera {
      * Computes eye, center, and up, based on the camera's default mode.
      */
     private void setDefaultMode(GlobalState gs) {
+        
+        eye.x = gs.vDist * Math.cos(gs.phi) * Math.cos(gs.theta) + gs.cnt.x;
+        eye.y = gs.vDist * Math.cos(gs.phi) * Math.sin(gs.theta) + gs.cnt.y;
+        eye.z = gs.vDist * Math.sin(gs.phi) + gs.cnt.z;
+        
+        center = gs.cnt;
+        String newLine = System.getProperty("line.separator");
+        //System.out.printf(gs.cnt.toString() + newLine);
         
     }
 
