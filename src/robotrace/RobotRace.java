@@ -174,10 +174,10 @@ public class RobotRace extends Base {
         // Enable depth testing.
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LESS);
-		
+        
         // Enable face culling for improved performance
-        // gl.glCullFace(GL_BACK);
-        // gl.glEnable(GL_CULL_FACE);
+        //gl.glCullFace(GL_BACK);
+        //gl.glEnable(GL_CULL_FACE);
         
 	    // Normalize normals.
         gl.glEnable(GL_NORMALIZE);

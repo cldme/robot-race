@@ -6,6 +6,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import static com.jogamp.opengl.GL2.*;
 
+
 /**
  * Implementation of a race track that is made from Bezier segments.
  */
@@ -14,6 +15,7 @@ abstract class RaceTrack {
     /** The width of one lane. The total width of the track is 4 * laneWidth. */
     private final static float laneWidth = 1.22f;
     private final static int resolution = 300;
+    private final static int repeats = 50;
     
     
     /**
@@ -29,6 +31,9 @@ abstract class RaceTrack {
      */
     public void draw(GL2 gl, GLU glu, GLUT glut) {
         
+        Textures.track.bind(gl);
+        Textures.track.setTexParameteri(gl, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
         drawTop(gl);
         drawOuter(gl);
         drawInner(gl);
@@ -49,29 +54,62 @@ abstract class RaceTrack {
     
     gl.glEnd();
     
-//    gl.glBegin(GL_LINES);
-//    
-//        for (int points = 0; points <= 400; points++) {
-//                
-//            Vector point = getPoint(points/400d);
-//            Vector normal = getTangent(points/400d).cross(new Vector (0f,0f,1f)).normalized();
-//            
-//            gl.glVertex3d(point.x,point.y,point.z);
-//            gl.glVertex3d(point.x+normal.x,point.y+normal.y,point.z+normal.z);
-//                    
-//        }
-//    
-//    gl.glEnd();    
+    gl.glBegin(GL_LINES);
+    
+        for (int points = 0; points <= 400; points++) {
+                
+            Vector point = getPoint(points/400d);
+            Vector normal = getTangent(points/400d).cross(new Vector (0f,0f,1f)).normalized();
+            
+            gl.glVertex3d(point.x,point.y,point.z);
+            gl.glVertex3d(point.x+normal.x,point.y+normal.y,point.z+normal.z);
+                    
+        }
+    
+    gl.glEnd();    
 
     }
     
+    void drawTopQuad (GL2 gl) {
+        gl.glBegin(GL_QUADS);
+            for (int i = -2; i < 2; i++) {
+                
+                for (int points = 0; points < resolution; points++) {
+                
+                    Vector pointPrev = getPoint(points/(double)resolution);
+                    Vector pointNext = getPoint((points + 1)/(double)resolution);
+                    Vector normal = getTangent(points/(double)resolution).cross(new Vector (0f,0f,1f)).normalized();
+                    Vector normal2 = getTangent((points+1)/(double)resolution).cross(new Vector (0f,0f,1f)).normalized();
+
+                    Vector result = pointPrev.add(normal.scale((i+1) * laneWidth));
+                    Vector result2 = pointPrev.add(normal.scale(i * laneWidth));
+                    Vector result3 = pointNext.add(normal2.scale(i* laneWidth));
+                    Vector result4 = pointNext.add(normal2.scale((i+1) * laneWidth));
+                    
+                    
+                    gl.glNormal3d(0,0,1);
+                    
+                    gl.glTexCoord2d(0, 0);
+                    gl.glVertex3d(result.x,result.y,result.z);
+                    gl.glTexCoord2d(1, 0);
+                    gl.glVertex3d(result2.x,result2.y,result2.z);
+                    gl.glTexCoord2d(0, 1);
+                    gl.glVertex3d(result3.x,result3.y,result3.z);
+                    gl.glTexCoord2d(1, 1);
+                    gl.glVertex3d(result4.x,result4.y,result4.z);
+                    
+                }
+
+                
+            }
+    gl.glEnd();
+    }
     
     void drawTop (GL2 gl) {
-
+        
             for (int i = -2; i < 2; i++) {
                 
                 gl.glBegin(GL_QUAD_STRIP);
-                
                 for (int points = 0; points < 2; points++) {
                 
                     Vector point = getPoint(points/(double)resolution);
@@ -79,8 +117,10 @@ abstract class RaceTrack {
 
                     Vector result = point.add(normal.scale(i * laneWidth));
                     Vector result2 = point.add(normal.scale((i+1) * laneWidth));
-                    gl.glNormal3d(0,0,1);
+                    gl.glNormal3d(0,0,1); //
+                    gl.glTexCoord2d(1, points * (repeats / (double)resolution));
                     gl.glVertex3d(result.x,result.y,result.z);
+                    gl.glTexCoord2d(0, points * (repeats / (double)resolution));
                     gl.glVertex3d(result2.x,result2.y,result2.z);
                     
                 }            
@@ -93,15 +133,13 @@ abstract class RaceTrack {
                     Vector result = point.add(normal.scale(i * laneWidth));
                     Vector result2 = point.add(normal.scale((i+1) * laneWidth));
                     gl.glNormal3d(0, 0, 1);
+                    gl.glTexCoord2d(1, points * (repeats / (double)resolution));
                     gl.glVertex3d(result.x,result.y,result.z);
+                    gl.glTexCoord2d(0, points * (repeats / (double)resolution));
                     gl.glVertex3d(result2.x,result2.y,result2.z);
                 }
-
                 gl.glEnd();
             }
-
-            
-    
     }
     
     void drawOuter (GL2 gl) {
@@ -124,7 +162,7 @@ abstract class RaceTrack {
             
             Vector point = getPoint(i/(double)resolution);
             Vector normal = getTangent(i/(double)resolution).cross(new Vector (0f,0f,1f)).normalized();
-                
+            
             Vector result = point.add(normal.scale(2*laneWidth));
             
             gl.glNormal3d(-normal.x,-normal.y,0);    
