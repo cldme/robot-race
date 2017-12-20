@@ -13,7 +13,7 @@ abstract class RaceTrack {
     
     /** The width of one lane. The total width of the track is 4 * laneWidth. */
     private final static float laneWidth = 1.22f;
-    private final static int resolution = 100;
+    private final static int resolution = 300;
     
     
     /**
@@ -117,7 +117,7 @@ abstract class RaceTrack {
             
             gl.glNormal3d(-normal.x,-normal.y,0);
             gl.glVertex3d(result.x,result.y,result.z);
-            gl.glVertex3d(result.x,result.y,-2);
+            gl.glVertex3d(result.x,result.y,result.z-1);
         }
         
         for (int i = 2; i <= resolution; i++) {
@@ -129,8 +129,7 @@ abstract class RaceTrack {
             
             gl.glNormal3d(-normal.x,-normal.y,0);    
             gl.glVertex3d(result.x,result.y,result.z);
-            gl.glVertex3d(result.x,result.y,-2);
-            gl.glNormal3d(-normal.x,-normal.y,0);
+            gl.glVertex3d(result.x,result.y,result.z-1);
         }
         gl.glEnd();
     }
@@ -147,7 +146,7 @@ abstract class RaceTrack {
             
             gl.glNormal3d(-normal.x,-normal.y,0);
             gl.glVertex3d(result.x,result.y,result.z);
-            gl.glVertex3d(result.x,result.y,-2);
+            gl.glVertex3d(result.x,result.y,result.z-1);
         }
         
         for (int i = 2; i <= resolution; i++) {
@@ -159,8 +158,7 @@ abstract class RaceTrack {
             
             gl.glNormal3d(-normal.x,-normal.y,0);    
             gl.glVertex3d(result.x,result.y,result.z);
-            gl.glVertex3d(result.x,result.y,-2);
-            gl.glNormal3d(-normal.x,-normal.y,0);
+            gl.glVertex3d(result.x,result.y,result.z-1);
         }
         gl.glEnd();
     }

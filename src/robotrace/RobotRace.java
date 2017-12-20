@@ -113,17 +113,47 @@ public class RobotRace extends Base {
         float g = 3.5f;
         raceTracks[1] = new BezierTrack(
                 
-            new Vector[] { new Vector(-15f, 0f, 0f),
-                           new Vector(-10f, -5f, 0f),
-                           new Vector(-5f, -5f, 0f),
-                           new Vector(0f, 0f, 0f),
-                           new Vector(5f, 5f, 0f),
-                           new Vector(10f, 5f, 0f),
-                           new Vector(15f, 0f, 0f),
-                           new Vector(20f, -5f, 0f),
-                           new Vector(25f, -5f, 0f),
-                           new Vector(40f, 0f, 0f)
-            }       
+            new Vector[] { new Vector(16f, -2.379993f, 0f),
+                           new Vector(17.03568f,6.612997f,-0.4572847f),
+                           new Vector(15.39956f,14.51239f,0f),
+                           new Vector(10.0101f,16.87626f,0f),
+                           new Vector(5.178312f,18.99553f,0f),
+                           new Vector(0.7413831f,15.13234f,0f),
+                           new Vector(-1.365651f,12.43286f,0f),
+                           new Vector(-4.521659f,8.38945f,0f),
+                           new Vector(-9.067448f,0.2013298f,0f),
+                           new Vector(0.4023554f,-1.109114f,0f),
+                           new Vector(4.620424f,-1.692816f,0f),
+                           new Vector(9.506009f,2.844918f,0f),
+                           new Vector(6.446103f,5.99296f,0f),
+                           new Vector(4.939413f,7.543048f,0f),
+                           new Vector(1.486183f,9.50538f,-4.580544f),
+                           new Vector(-2.880064f,12.11383f,-3.134924f),
+                           new Vector(-12.34857f,17.77042f,0f),
+                           new Vector(-21.53945f,13.99727f,0f),
+                           new Vector(-13.84152f,5.419401f,0f),
+                           new Vector(-10.30898f,1.483055f,0f),
+                           new Vector(-5.282493f,-3.16907f,4.840358f),
+                           new Vector(-11.78699f,-8.081102f,2.397926f),
+                           new Vector(-14.41224f,-10.06362f,1.412148f),
+                           new Vector(-16.80755f,-16.73213f,2.397926f),
+                           new Vector(-10.1092f,-16.73213f,2.397926f),
+                           new Vector(-9.10943f,-16.73213f,2.397926f),
+                           new Vector(-8.61202f,-16.73213f,3.641369f),
+                           new Vector(-5.448234f,-16.73213f,7.430427f),
+                           new Vector(-4.807303f,-16.73213f,8.198026f),
+                           new Vector(0.1789123f,-16.73213f,8.577466f),
+                           new Vector(1.178912f,-16.73213f,7.430427f),
+                           new Vector(1.836054f,-16.73213f,6.67666f),
+                           new Vector(2.342921f,-16.73213f,0.2505693f),
+                           new Vector(6.382141f,-16.73213f,0.2505693f),
+                           new Vector(9.877653f,-16.73213f,0.2505693f),
+                           new Vector(12.81498f,-15.94569f,0.2505693f),
+                           new Vector(14.32221f,-12.64111f,0.2505693f),
+                           new Vector(15.11011f,-10.91366f,0.2505693f),
+                           new Vector(15.4325f,-7.307707f,0.2505693f),
+                           new Vector(16f,-2.379993f,0f)
+            }              
         );
         
         // Initialize the terrain
@@ -167,6 +197,9 @@ public class RobotRace extends Base {
      */
     @Override
     public void setView() {
+        
+        gl.glEnable(GL_LIGHTING);
+        gl.glEnable(GL_LIGHT0);
         // Select part of window.
         gl.glViewport(0, 0, gs.w, gs.h);
         
@@ -177,21 +210,23 @@ public class RobotRace extends Base {
         // Set the perspective.
         glu.gluPerspective(45, (float)gs.w / (float)gs.h, 0.1*gs.vDist, 10*gs.vDist);
         
-        // Add light source
-        gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[]{10f,0f,10f,1f}, 0);
-        gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0.6f,0f,0f,1f}, 0);
-        gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[]{1f,1f,1f,1f}, 0);
-        
         // Set camera.
         gl.glMatrixMode(GL_MODELVIEW);
         gl.glLoadIdentity();
-  
+        
+        //Add light source
+        gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0f, 6f, 0f, 0f}, 0);
+        gl.glLightfv(GL_LIGHT0, GL_AMBIENT, new float[]{0.2f,0f,0.4f,1f}, 0);
+        gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0.6f,0f,0f,1f}, 0);
+        gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[]{1f,1f,1f,1f}, 0);
+        
         // Update the view according to the camera mode and robot of interest.
         // For camera modes 1 to 4, determine which robot to focus on.
         camera.update(gs, robots[0]);
         glu.gluLookAt(camera.eye.x(),    camera.eye.y(),    camera.eye.z(),
                       camera.center.x(), camera.center.y(), camera.center.z(),
                       camera.up.x(),     camera.up.y(),     camera.up.z());
+
     }
     
     /**
@@ -216,6 +251,7 @@ public class RobotRace extends Base {
         gl.glColor3f(0f, 0f, 0f);
         
         gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
         
 
     // Draw hierarchy example.
