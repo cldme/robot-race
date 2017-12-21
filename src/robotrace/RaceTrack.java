@@ -28,9 +28,9 @@ abstract class RaceTrack {
      * Draws this track, based on the control points.
      */
     public void draw(GL2 gl, GLU glu, GLUT glut) {
-        //drawTop(gl);
-        //drawOuter(gl);
-        //drawInner(gl);
+        drawTop(gl);
+        drawOuter(gl);
+        drawInner(gl);
     }
     
     void drawBezier(GL2 gl) {
