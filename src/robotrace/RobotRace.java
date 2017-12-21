@@ -261,7 +261,7 @@ public class RobotRace extends Base {
         if (gs.showAxes) {
             drawAxisFrame();
         }
-        DrawTrackBounds();
+        //DrawTrackBounds();
         // Draw the (first) robot.
         gl.glUseProgram(robotShader.getProgramID()); 
         
@@ -287,10 +287,10 @@ public class RobotRace extends Base {
     public void drawAxisFrame() {
 
         gl.glColor3f(1f, 0f, 0f);
-        gl.glPushMatrix();
-        gl.glTranslatef((float)camera.center.x(), (float)camera.center.y(), (float)camera.center.z());
-        glut.glutSolidSphere(0.15f, 24, 12);
-        gl.glPopMatrix();
+//        gl.glPushMatrix();
+//        gl.glTranslatef((float)camera.center.x(), (float)camera.center.y(), (float)camera.center.z());
+//        glut.glutSolidSphere(0.15f, 24, 12);
+//        gl.glPopMatrix();
         
         gl.glColor3f(1f, 1f, 0f);
         glut.glutSolidSphere(0.3f, 24, 12);
@@ -306,6 +306,7 @@ public class RobotRace extends Base {
         gl.glPopMatrix();
         gl.glColor3f(0f, 0f, 1f);
         drawArrow();
+        
     }
     
     void DrawTrackBounds () {
@@ -332,9 +333,11 @@ public class RobotRace extends Base {
      * Draws a single arrow
      */
     public void drawArrow() {
+        gl.glPushMatrix();
         glut.glutSolidCylinder(0.05f, 1f, 12, 6);
         gl.glTranslatef(0f, 0f, 1f);
         glut.glutSolidCone(0.2f, 0.5f, 12, 6);
+        gl.glPopMatrix();
     }
  
     /**

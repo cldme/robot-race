@@ -24,20 +24,13 @@ abstract class RaceTrack {
     public RaceTrack() {
     }
 
-
-    
     /**
      * Draws this track, based on the control points.
      */
     public void draw(GL2 gl, GLU glu, GLUT glut) {
-        
-        Textures.track.bind(gl);
-        Textures.track.setTexParameteri(gl, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        drawTop(gl);
-        drawOuter(gl);
-        drawInner(gl);
-        //drawBezier(gl);
+        //drawTop(gl);
+        //drawOuter(gl);
+        //drawInner(gl);
     }
     
     void drawBezier(GL2 gl) {
