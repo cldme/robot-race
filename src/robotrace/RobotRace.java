@@ -270,6 +270,8 @@ public class RobotRace extends Base {
         
         // Draw the race track.
         gl.glUseProgram(trackShader.getProgramID());
+        int texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
+        gl.glUniform1i(texSampler, 0);
         raceTracks[gs.trackNr].draw(gl, glu, glut);
         
         // Draw the terrain.

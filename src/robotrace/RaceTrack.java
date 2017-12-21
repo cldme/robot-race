@@ -1,6 +1,7 @@
 package robotrace;
 
 import static com.jogamp.opengl.GL.GL_LINES;
+import static com.jogamp.opengl.GL.GL_TEXTURE_2D;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
@@ -14,9 +15,8 @@ abstract class RaceTrack {
     
     /** The width of one lane. The total width of the track is 4 * laneWidth. */
     private final static float laneWidth = 1.22f;
-    private final static int resolution = 300;
-    private final static int repeats = 30;
-    
+    private final static int resolution = 200;
+    private final static int repeats = 50;
     
     /**
      * Constructor for the default track.
@@ -28,7 +28,18 @@ abstract class RaceTrack {
      * Draws this track, based on the control points.
      */
     public void draw(GL2 gl, GLU glu, GLUT glut) {
+        ;
+        Textures.track.bind(gl);
+        Textures.track.setTexParameteri(gl, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        gl.glGenerateMipmap(GL_TEXTURE_2D);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         drawTop(gl);
+        Textures.brick.bind(gl);
+        Textures.brick.setTexParameteri(gl, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        gl.glGenerateMipmap(GL_TEXTURE_2D);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         drawOuter(gl);
         drawInner(gl);
     }
@@ -44,8 +55,6 @@ abstract class RaceTrack {
             gl.glVertex3d(point.x,point.y,point.z);
                     
         }
-    
-    gl.glEnd();
     
     gl.glBegin(GL_LINES);
     

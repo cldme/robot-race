@@ -53,10 +53,16 @@ class Terrain {
 
                 Vector pos = TerrainUtility.bezierSurfaces[surf][i];
                 gl.glPushMatrix();
-                gl.glColor3f(1,0,0);
                 gl.glTranslatef((float)pos.x, (float)pos.y, (float)pos.z);
-                glut.glutSolidSphere(0.3d, 8, 4);
-                gl.glPopMatrix();;
+                if (i == 0 || i == 3 || i == 12 || i == 15) {
+                    gl.glColor3f(0,0,1);
+                    glut.glutSolidSphere(0.5d, 8, 4);
+                } else {
+                    gl.glColor3f(1,0,0);
+                    glut.glutSolidSphere(0.3d, 8, 4);
+                }
+                
+                gl.glPopMatrix();
 
             }
         }

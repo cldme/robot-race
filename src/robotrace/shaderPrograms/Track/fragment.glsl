@@ -2,7 +2,7 @@
 varying vec3 N;
 varying vec3 P;
 varying vec4 VaryingTexCoord0;
-uniform sampler2D track;
+uniform sampler2D tex;
 
 vec4 shading(vec3 P, vec3 N) {
 
@@ -23,7 +23,7 @@ return result;
 void main()
 {
 
-    gl_FragColor = vec4(VaryingTexCoord0.st - floor(VaryingTexCoord0.st),0,1); 
+    gl_FragColor = texture2D(tex, VaryingTexCoord0.st);//vec4(VaryingTexCoord0.st - floor(VaryingTexCoord0.st),0,1); 
 
 	
 }
