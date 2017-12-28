@@ -61,6 +61,56 @@ public abstract class BodyPart {
     public void DrawStick() {}
     
     /**
+     * Function for drawing a solid cube
+     * 
+     * @param dim   The size of the cube (length of one side)
+     * @param dispZ The displacement on the Z-axis
+     */
+    public void SolidCube(float dim, float dispZ) {
+        gl.glPushMatrix();
+        gl.glBegin(GL2.GL_QUADS);
+        
+        // Front Face (up)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-dim, -dim, dim);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( dim, -dim, dim);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( dim, dim, dim);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-dim, dim, dim);
+
+        // Back Face (down)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( dim, -dim, -dim);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-dim, -dim, -dim);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-dim, dim, -dim);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( dim, dim, -dim);
+
+        // Top Face (front)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-dim, dim, dim);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( dim, dim, dim);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( dim, dim, -dim - dispZ);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-dim, dim, -dim - dispZ);
+
+        // Bottom Face (back)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( dim, -dim, dim);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-dim, -dim, dim);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-dim, -dim, -dim - dispZ);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( dim, -dim, -dim - dispZ);
+
+        // Right face (right)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( dim, -dim, dim);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( dim, -dim, -dim -dispZ);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( dim, dim, -dim - dispZ);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( dim, dim, dim);
+
+        // Left Face (left)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-dim, -dim, -dim - dispZ);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-dim, -dim, dim);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-dim, dim, dim);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-dim, dim, -dim - dispZ);
+        
+        gl.glEnd();
+        gl.glPopMatrix();
+    }
+    
+    /**
      * Function for drawing a solid cylinder
      * 
      * @param radius The radius of the cylinder
@@ -130,7 +180,25 @@ class Head extends BodyPart {
     
     @Override
     public void Draw() {
+        // Push current view matrix on top of the stack
+        gl.glPushMatrix();
         
+        // Enable and bind texture
+        texture.enable(gl);
+        texture.bind(gl);
+        
+        // Translate head to correct position
+        gl.glTranslated(0, 0, this.length + 7f);
+        
+        // -------------------- DRAW ROBOT HEAD (textured cube) ----------
+        this.SolidCube(3, 0);
+        // -------------------- DRAW ROBOT HEAD (textured cube) ----------
+        
+        
+        // Disable OpenGL texture
+        texture.disable(gl);
+        // Pop view matrix from the top of the stack
+        gl.glPopMatrix();
     }
 }
 
@@ -156,7 +224,31 @@ class Body extends BodyPart {
     
     @Override
     public void Draw() {
+        // Push current view matrix on top of the stack
+        gl.glPushMatrix();
         
+        // Enable and bind texture
+        texture.enable(gl);
+        texture.bind(gl);
+        
+        //Translate body to correct position
+        gl.glTranslated(0, 0, this.length);
+        
+        // -------------------- DRAW ROBOT HEAD (textured cube) ----------
+        this.SolidCube(3, 6.5f);
+        // -------------------- DRAW ROBOT HEAD (textured cube) ----------
+        
+        
+        // Translate for neck to be ontop of body
+        gl.glTranslated(0, 0, 1f);
+
+        // Draw the "neck"
+        this.SolidCylinder((double) 3 * 0.75, this.length * 0.60);
+        
+        // Disable OpenGL texture
+        texture.disable(gl);
+        // Pop view matrix from the top of the stack
+        gl.glPopMatrix();
     }
 }
 
@@ -245,7 +337,70 @@ class Arm extends BodyPart {
     
     @Override
     public void Draw() {
-        
+        // Step up the animation tickers
+        upperAnim += upperstep;
+        lowerAnim += lowerstep;
+
+        // switch arm sway direction when needed
+        if (abs(upperAnim) >= 80 && upperAnim >= 0 || upperAnim < 0 && abs(upperAnim) >= 45) {
+            upperstep = upperstep * -1;
+        }
+
+        // switch arm sway direction when needed
+        if (lowerAnim == 80 || lowerAnim == 0) {
+            lowerstep = lowerstep * -1;
+        }
+
+        gl.glPushMatrix();
+
+        //Translate for correct position on body
+        gl.glTranslated(0, 0, this.length * 0.9);
+
+        gl.glPushMatrix();
+
+        //Set accent color
+        this.setMaterial(this.accent);
+
+        //Translate to correct postition next to body
+        gl.glTranslated((this.width * .5 - 0.75) * this.side, 0, 0);
+
+        //Rotate over y-axis to offset from the body
+        gl.glRotated(170 * this.side, 0, 1, 0);
+
+        // Animate swaying of uppe arm
+        gl.glRotated(-this.upperAnim, 1, 0, 0);
+
+        //Draw shoulder
+        this.SolidSphere(this.limbRadius);
+
+        // Draw upper arm
+        this.SolidCylinder(this.limbRadius, this.armLength);
+
+        // Translate for joint to be at end of upper arm
+        gl.glTranslated(0, 0, this.armLength);
+
+        // Draw the joint
+        this.SolidSphere(this.limbRadius);
+
+        // Set rotation of lower arm
+        gl.glRotated(-lowerAnim, 1, 0, 0);
+
+        // Draw the lower arm
+        this.SolidCylinder(this.limbRadius, this.armLength);
+
+        // Translate for hand position
+        gl.glTranslated(0, 0, (this.length * .80) / 2);
+
+        //Set original color
+        this.setMaterial(this.material);
+
+        // Draw hand (cone)
+        this.SolidCone(this.bodyWidthRadius / 3, -this.length * .3);
+        // Close the hand cone | create palm 
+        this.SolidCircle(this.bodyWidthRadius / 3);
+
+        gl.glPopMatrix();
+        gl.glPopMatrix();
     }
 }
 
@@ -297,8 +452,53 @@ class Leg extends BodyPart {
     
     @Override
     public void Draw() {
-        
+        this.angle += this.step;
+
+        if (abs(this.angle) == 40) {
+            this.step = this.step * -1;
+        }
+
+        // Push me, and then just touch me, till I can't get my..satisfaction
+        gl.glPushMatrix();
+
+        //Set accent color
+        this.setMaterial(this.accent);
+
+        //Translate legs for correct position to body
+        gl.glTranslated((this.width * .2) * this.side, 0, this.limbRadius);
+
+        // Push me, and then just touch me, till I can't get my..satisfaction
+        gl.glPushMatrix();
+
+        //Draw rotated leg
+        gl.glRotated(-7 * this.side, 0, 1, 0);
+
+        // Animate the leg swaying
+        gl.glRotated(this.angle, 1, 0, 0);
+
+        // Draw the leg
+        this.SolidCylinder(this.limbRadius, -this.length * 0.8);
+        //gl.glPopMatrix();
+
+        gl.glTranslated(0, 0, -this.length * 0.80);
+
+        //Set original color
+        this.setMaterial(this.material);
+
+        //Create clipping plane for hemisphere foot
+        double[] eqn = {0.0, 0.0, 1.0, 0.0};
+        gl.glClipPlane(GL2.GL_CLIP_PLANE0, eqn, 0);
+        gl.glEnable(GL2.GL_CLIP_PLANE0);
+
+        //Draw foot
+        this.SolidSphere(this.bodyWidthRadius * .4);
+        gl.glDisable(GL2.GL_CLIP_PLANE0);
+
+        // Draw foot sole
+        this.SolidCircle(this.bodyWidthRadius * .4);
+
+        gl.glPopMatrix();
+
+        gl.glPopMatrix();
     }
 }
-
-

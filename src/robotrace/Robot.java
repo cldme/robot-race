@@ -109,8 +109,10 @@ class Robot {
         
         // Draw the body parts, results in drawing the robot (using the hierarchy example)
         for(BodyPart p : parts) {
-            p.DrawStick();
+            p.Draw();
         }
+        
+        gl.glPopMatrix();
     }
     
     // Function for setting the correct material for a given robot type
