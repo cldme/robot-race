@@ -84,24 +84,16 @@ public class RobotRace extends Base {
         robots = new Robot[4];
         
         // Initialize robot 0
-        robots[0] = new Robot(Material.GOLD
-                
-        );
+        robots[0] = new Robot(Material.GOLD, Material.GOLD, torso, head);
         
         // Initialize robot 1
-        robots[1] = new Robot(Material.SILVER
-              
-        );
+        robots[1] = new Robot(Material.SILVER, Material.SILVER, torso, head);
         
         // Initialize robot 2
-        robots[2] = new Robot(Material.WOOD
-              
-        );
+        robots[2] = new Robot(Material.WOOD, Material.WOOD, torso, head);
 
         // Initialize robot 3
-        robots[3] = new Robot(Material.ORANGE
-                
-        );
+        robots[3] = new Robot(Material.ORANGE, Material.ORANGE, torso, head);
         
         // Initialize the camera
         camera = new Camera();
@@ -185,7 +177,7 @@ public class RobotRace extends Base {
         //gl.glCullFace(GL_BACK);
         //gl.glEnable(GL_CULL_FACE);
         
-	    // Normalize normals.
+	// Normalize normals.
         gl.glEnable(GL_NORMALIZE);
         
 	// Try to load four textures, add more if you like in the Textures class         
@@ -196,6 +188,10 @@ public class RobotRace extends Base {
         ShaderPrograms.setupShaders(gl, glu);
         reportError("shaderProgram");
         
+        // Load textures for the robots (head and torso)
+        for (int i = 0; i < robots.length; i++) {
+            robots[i].setTorso(torso, head);
+        }
     }
    
     /**
@@ -357,52 +353,6 @@ public class RobotRace extends Base {
         //sun.renderFSQ(gl);
     }
     
-    public void drawSceneForWater() {
-    
-    gl.glUseProgram(defaultShader.getProgramID());
-        reportError("program");
-        
-        // Background color.
-        gl.glClearColor(0.53f, 0.808f, 1f, 0.98f);
-        
-        // Clear background.
-        gl.glClear(GL_COLOR_BUFFER_BIT);
-        
-        // Clear depth buffer.
-        gl.glClear(GL_DEPTH_BUFFER_BIT);
-        
-        // Set color to black.
-        gl.glColor3f(0f, 0f, 0f);
-        
-        gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    // Draw hierarchy example.
-        //drawHierarchy();
-        
-        // Draw the axis frame.
-        if (gs.showAxes) {
-            drawAxisFrame();
-        }
-        //DrawTrackBounds();
-        // Draw the (first) robot.
-        gl.glUseProgram(robotShader.getProgramID()); 
-        
-        robots[0].draw(gl, glu, glut, 0);
-        
-        
-        // Draw the race track.
-        gl.glUseProgram(trackShader.getProgramID());
-        int texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
-        gl.glUniform1i(texSampler, 0);
-        raceTracks[gs.trackNr].draw(gl, glu, glut);
-        
-        // Draw the terrain.
-        gl.glUseProgram(terrainShader.getProgramID());
-        terrain.draw(gl, glu, glut);
-        reportError("terrain:");
-    
-    }
-    
     /**
      * Draws the x-axis (red), y-axis (green), z-axis (blue),
      * and origin (yellow).
@@ -514,5 +464,3 @@ public class RobotRace extends Base {
         robotRace.run();
     }
 }
-
-// Added comment #1 (from Matteo)
