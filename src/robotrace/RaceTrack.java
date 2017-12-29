@@ -273,7 +273,6 @@ abstract class RaceTrack {
             }    
     
     
-    
     } // needs fixing (downward displacement along perpendicular to normal)
     
     /**
