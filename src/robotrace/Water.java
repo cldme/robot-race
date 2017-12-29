@@ -1,14 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package robotrace;
 
-/**
- *
- * @author asusbook
- */
+import com.jogamp.opengl.util.gl2.GLUT;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.glu.GLU;
+
+
 public class Water {
+    
+    public Water () {
+    
+    
+    
+    }
+    
+    public void draw(GL2 gl, GLU glu, GLUT glut) {
+    
+    
+    
+    
+    
+    }
     
 }

@@ -3,42 +3,85 @@ package robotrace;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
+import java.awt.Color;
 
 /**
  * Represents the terrain, to be implemented according to the Assignments.
  */
 class Terrain {
-
-    private static int subdivisions; // relatively large value.. will be lowered for final terrain
-    private static int patches;
+    private int subdivisions;
+    private int patches;
+    private double stepVert;
+    private int vertexCount;
+    private double[][] heights;
+    private Color[] colors;
+    private Vector[] vertices;
+    private Vector[] normals;
     
-    public Terrain() {
-        this.subdivisions = TerrainUtility.subdivisions;
-        this.patches = TerrainUtility.p;
+    public Terrain(int subdivisions, int patches) {
+
+        this.subdivisions = subdivisions;
+        this.patches = patches;
+        this.vertexCount = subdivisions * patches + 1;
+        this.stepVert = 40d / subdivisions * patches;
+        this.heights = TerrainUtility.generateHeights();
+        this.vertices = TerrainUtility.storeVertexPositions();
+        this.colors = TerrainUtility.generateColors(vertices, 10f);
+        //this.normals = TerrainUtility.generateNormals();
     }
 
     /**
      * Draws the terrain.
      */
     public void draw(GL2 gl, GLU glu, GLUT glut) {
+
+        //drawSubdivisions(gl, glut);
+        //drawControlPoints(gl, glut);
+        //drawCPConnections(gl, glut);
+        gl.glBegin(GL2.GL_TRIANGLES);
         
+        for (int idx = 0, stride = 0; idx < vertexCount * (vertexCount - 1); idx++, stride++) {
+            
+            if (stride == patches * subdivisions) {
+                stride = -1;
+                continue;
+            }
+            
+            int row = idx / vertexCount;
+            int col = idx % vertexCount;
+            
+            int topLeft = idx;
+            int topRight = topLeft + 1;
+            int bottomLeft = idx + vertexCount;
+            int bottomRight = bottomLeft + 1;
+            
+            addQuad(topLeft, topRight, bottomLeft, bottomRight, col % 2 == row % 2, gl);
+        }
+        gl.glEnd();
+    }
+    
+    
+    
+    private void drawSubdivisions (GL2 gl, GLUT glut) {
+    
         for (int surface = 0; surface < patches * patches; surface++) {
         
             for (int subsY = 0; subsY <= subdivisions; subsY++) {
 
                 for (int subsX = 0; subsX <= subdivisions; subsX++) {
                     gl.glPushMatrix();
-                    Vector pos = TerrainUtility.getPointSurface(subsX/(float)subdivisions, subsY/(float)subdivisions, surface, TerrainUtility.bezierSurfaces);
+                    Vector pos = TerrainUtility.getPointSurface(subsX/(float)subdivisions, subsY/(float)subdivisions, surface, TerrainUtility.getSurface());
                     gl.glTranslatef((float)pos.x, (float)pos.y, (float)pos.z);
-                    if (pos.z < -3f) {
-                        gl.glColor3f(0,0,1);
-                    } else if (pos.z < -1f) {
-
-                        gl.glColor3f(1,1,0);
-                    } else {
-
-                        gl.glColor3f(0,1,0);
-                    }
+                    gl.glColor3f(0,0,0);
+//                    if (pos.z < -3f) {
+//                        gl.glColor3f(0,0,1);
+//                    } else if (pos.z < -1f) {
+//
+//                        gl.glColor3f(1,1,0);
+//                    } else {
+//
+//                        gl.glColor3f(0,1,0);
+//                    }
                     glut.glutSolidSphere(0.2d, 8, 4);
                     gl.glPopMatrix();;
 
@@ -46,12 +89,16 @@ class Terrain {
 
             }
         
-        }
-
+        }    
+    
+    }
+    
+    private void drawControlPoints (GL2 gl, GLUT glut) {
+    
         for (int surf = 0; surf < patches * patches; surf++) {
             for (int i = 0; i < 16; i++) {
 
-                Vector pos = TerrainUtility.bezierSurfaces[surf][i];
+                Vector pos = TerrainUtility.getVectorInPatch(surf, i);
                 gl.glPushMatrix();
                 gl.glTranslatef((float)pos.x, (float)pos.y, (float)pos.z);
                 if (i == 0 || i == 3 || i == 12 || i == 15) {
@@ -65,8 +112,12 @@ class Terrain {
                 gl.glPopMatrix();
 
             }
-        }
-        
+        }    
+    
+    }
+    
+    private void drawCPConnections (GL2 gl, GLUT glut) {
+    
         gl.glBegin(gl.GL_LINES);
         gl.glColor3f(0,0,1);
         Vector[] points;
@@ -74,7 +125,7 @@ class Terrain {
         for (int surf = 0; surf < patches * patches; surf++) {
             
             for (int j = 0; j < 16; j++) {
-                points = TerrainUtility.bezierSurfaces[surf];
+                points = TerrainUtility.getPatch(surf);
 
                 for (int i = 0; i < 4; i++) {
 
@@ -103,8 +154,56 @@ class Terrain {
             }
             
         }
-        gl.glEnd();
-
+        gl.glEnd();    
+    
     }
     
+    public void init(GL2 gl) { 
+    }
+    
+    public void addVertex(Vector v, GL2 gl) {
+    
+        gl.glVertex3d(v.x(), v.y(),v.z());
+    
+    }
+    
+    public void addNormal(Vector v, GL2 gl) {
+    
+        gl.glNormal3d(v.x(), v.y(),v.z());
+    
+    }
+    
+    public void addColor(Color c, GL2 gl) {
+
+        gl.glColor3f((float)c.getRed()/255f, (float)c.getGreen()/255f, (float)c.getBlue()/255f);
+    
+    }
+    
+    public void addQuad (int topLeft, int topRight, int bottomLeft, int bottomRight, boolean rightHanded, GL2 gl) {
+    
+        addLeftTriangle(topLeft, topRight, bottomLeft, bottomRight, rightHanded, gl);
+        addRightTriangle(topLeft, topRight, bottomLeft, bottomRight, rightHanded, gl);
+    }
+    
+    public void addLeftTriangle(int topLeft, int topRight, int bottomLeft, int bottomRight, boolean rightHanded, GL2 gl) {
+        addColor(colors[topLeft], gl);
+        addVertex(vertices[topLeft], gl);
+        addVertex(vertices[bottomLeft], gl);
+        if (rightHanded)
+            addVertex(vertices[bottomRight], gl); 
+        else
+            addVertex(vertices[topRight], gl);
+    }
+    
+    public void addRightTriangle(int topLeft, int topRight, int bottomLeft, int bottomRight, boolean rightHanded, GL2 gl) {
+        addColor(colors[topRight], gl);
+        addVertex(vertices[topRight], gl);
+        if (rightHanded)
+            addVertex(vertices[topLeft], gl); 
+        else
+            addVertex(vertices[bottomLeft], gl);
+        addVertex(vertices[bottomRight], gl);
+    
+    }
+
 }

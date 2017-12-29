@@ -38,6 +38,54 @@ class Robot {
      * Draws this robot (as a {@code stickfigure} if specified).
      */
     public void draw(GL2 gl, GLU glu, GLUT glut, float tAnim) {
+        float scale = 0.5f;
+        gl.glPushMatrix();
+        Textures.head.bind(gl);
+        gl.glScalef(scale,scale,scale);
+        
+        
+        gl.glBegin(GL2.GL_QUADS);
+        
+        // Front Face (up)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, 0.5f);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, 0.5f);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, 0.5f);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, 0.5f);
+
+        // Back Face (down)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, -0.5f);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, -0.5f);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, -0.5f);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, -0.5f);
+
+        // Top Face (front)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-0.5f, 0.5f, 0.5f);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 0.5f, 0.5f, 0.5f);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, -0.5f);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, -0.5f);
+
+        // Bottom Face (back)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, 0.5f);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, 0.5f);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-0.5f, -0.5f, -0.5f);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( 0.5f, -0.5f, -0.5f);
+
+        // Right face (right)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, 0.5f);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, -0.5f);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, -0.5f);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, 0.5f);
+
+        // Left Face (left)
+        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, -0.5f);
+        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, 0.5f);
+        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, 0.5f);
+        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, -0.5f);
+        
+        gl.glEnd();
+        
+        gl.glPopMatrix();
+        
         
     }
     
