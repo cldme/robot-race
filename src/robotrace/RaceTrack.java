@@ -56,7 +56,6 @@ abstract class RaceTrack {
         Textures.track.bind(gl);
         Textures.track.setTexParameteri(gl, GL_TEXTURE_WRAP_T, GL_REPEAT);
         drawTop(gl);
-        //gl.glBindTexture(GL_TEXTURE_2D, 0);
         Textures.brick.bind(gl);
         Textures.brick.setTexParameteri(gl, GL_TEXTURE_WRAP_S, GL_REPEAT);
         gl.glGenerateMipmap(GL_TEXTURE_2D);
@@ -65,8 +64,7 @@ abstract class RaceTrack {
         drawOuter(gl);
         drawInner(gl);
         drawBottom(gl);
-        //gl.glBindTexture(GL_TEXTURE_2D, 0);
-        //gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+        gl.glBindTexture(GL_TEXTURE_2D, 0);
     }
     void drawBezier(GL2 gl) {
     
@@ -281,7 +279,12 @@ abstract class RaceTrack {
      */
     public Vector getLanePoint(int lane, double t){
 
-        return Vector.O;
+        Vector position = getPoint(t);
+        Vector normal = getTangent(t).cross(new Vector (0f,0f,1f)).normalized();
+                    
+        Vector result = position.add(normal.scale((2 *lane - 3) * laneWidth / 2f));
+        
+        return result;
 
     }
     
@@ -291,7 +294,9 @@ abstract class RaceTrack {
      */
     public Vector getLaneTangent(int lane, double t){
         
-        return Vector.O;
+        Vector tangent = getTangent(t).cross(new Vector (0f,0f,1f)).normalized();
+        
+        return tangent;
 
     }
     

@@ -2,6 +2,7 @@ package robotrace;
 
 import static com.jogamp.opengl.GL2.*;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import static robotrace.ShaderPrograms.*;
 import static robotrace.Textures.*;
 
@@ -73,6 +74,9 @@ public class RobotRace extends Base {
     private final Terrain terrain;
     
     private final Sun sun;
+    FloatBuffer viewM = FloatBuffer.allocate(16);
+    FloatBuffer projM = FloatBuffer.allocate(16);
+    IntBuffer viewP = IntBuffer.allocate(4);
 
     /**
      * Constructs this robot race by initializing robots,
@@ -86,14 +90,14 @@ public class RobotRace extends Base {
         // Initialize robot 0
         robots[0] = new Robot(Material.GOLD, Material.GOLD, torso, head);
         
-        // Initialize robot 1
-        robots[1] = new Robot(Material.SILVER, Material.SILVER, torso, head);
-        
-        // Initialize robot 2
-        robots[2] = new Robot(Material.WOOD, Material.WOOD, torso, head);
-
-        // Initialize robot 3
-        robots[3] = new Robot(Material.ORANGE, Material.ORANGE, torso, head);
+//        // Initialize robot 1
+//        robots[1] = new Robot(Material.SILVER, Material.SILVER, torso, head);
+//        
+//        // Initialize robot 2
+//        robots[2] = new Robot(Material.WOOD, Material.WOOD, torso, head);
+//
+//        // Initialize robot 3
+//        robots[3] = new Robot(Material.ORANGE, Material.ORANGE, torso, head);
         
         // Initialize the camera
         camera = new Camera();
@@ -155,7 +159,9 @@ public class RobotRace extends Base {
         
         terrain = new Terrain(TerrainUtility.getSubdivisions(), TerrainUtility.getPatches());
         
-        sun = new Sun(new Vector(0,0,0));
+        sun = new Sun(new Vector(10,0,0));
+        
+        
     }
     
     /**
@@ -187,11 +193,7 @@ public class RobotRace extends Base {
         // Try to load and set up shader programs
         ShaderPrograms.setupShaders(gl, glu);
         reportError("shaderProgram");
-        
-        // Load textures for the robots (head and torso)
-        for (int i = 0; i < robots.length; i++) {
-            robots[i].setTorso(torso, head);
-        }
+
     }
    
     /**
@@ -202,19 +204,23 @@ public class RobotRace extends Base {
         
         gl.glEnable(GL_LIGHTING);
         gl.glEnable(GL_LIGHT0);
+        
         // Select part of window.
         gl.glViewport(0, 0, gs.w, gs.h);
-        
+        gl.glGetIntegerv(GL_VIEWPORT, viewP);
         // Set projection matrix.
         gl.glMatrixMode(GL_PROJECTION);
         gl.glLoadIdentity();
-
+        
         // Set the perspective.
         glu.gluPerspective(45, (float)gs.w / (float)gs.h, 0.1*gs.vDist, 10*gs.vDist);
         
+        gl.glGetFloatv(GL_PROJECTION_MATRIX, projM);
+
         // Set camera.
-        
+
         gl.glMatrixMode(GL_MODELVIEW);
+        
         gl.glLoadIdentity();
         
         //Add light source
@@ -226,10 +232,12 @@ public class RobotRace extends Base {
         // Update the view according to the camera mode and robot of interest.
         // For camera modes 1 to 4, determine which robot to focus on.
         camera.update(gs, robots[0]);
+        
+        
         glu.gluLookAt(camera.eye.x(),    camera.eye.y(),    camera.eye.z(),
                       camera.center.x(), camera.center.y(), camera.center.z(),
                       camera.up.x(),     camera.up.y(),     camera.up.z());
-        
+        gl.glGetFloatv(GL_MODELVIEW_MATRIX, viewM);
     }
     
     /**
@@ -237,120 +245,72 @@ public class RobotRace extends Base {
      */
     @Override
     public void drawScene() {
-        
-//        gl.glUseProgram(defaultShader.getProgramID());
-//        reportError("program");
 
-//        // Background color.
-//        //gl.glClearColor(1f ,1f, 1f, 1f);
-//        //gl.glClearColor(0.53f, 0.808f, 1f, 0.98f);
-//        gl.glClearColor(0f, 0f, 0f, 1f);
-//        
-//        // Clear background.
-//
-//        
-//        // Set color to black.
-//
-//        
-//        gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//
-//        
-//        
-//        //System.out.println(sun == null);
-//        
-//        if (!sun.isInitialized()) {
-//            sun.init(gl, gs);
-//            sun.setInitialize();
-//        }
-//        
-//        sun.bindSunFBO(gl);
-//        
-//        gl.glClear(GL_COLOR_BUFFER_BIT);
-//        
-//        // Clear depth buffer.
-//        gl.glClear(GL_DEPTH_BUFFER_BIT);
-//        
-//
-//
-//        //DrawTrackBounds();
-//        // Draw the (first) robot.
-//        gl.glUseProgram(robotShader.getProgramID()); 
-//
-//        robots[0].draw(gl, glu, glut, 0);
-//        
-//        // Draw the race track.
-//        gl.glUseProgram(blackShader.getProgramID());
-//        raceTracks[gs.trackNr].draw(gl, glu, glut);
-//        
-//        
-//        // Draw the terrain.
-//        
-//        gl.glUseProgram(blackShader.getProgramID());
-//        terrain.draw(gl, glu, glut);
-//        reportError("terrain:");
-//        gl.glUseProgram(defaultShader.getProgramID()); 
-//        //sun.move();
-//        
-//        sun.draw(gl, glu, glut);
-//        
-//
-//        sun.unbindCurrentFBO(gl, gs);
-
-        
-        // --------------------
         gl.glClear(GL_COLOR_BUFFER_BIT);
-        
-        // Clear depth buffer.
+
         gl.glClear(GL_DEPTH_BUFFER_BIT);
         
-        gl.glUseProgram(defaultShader.getProgramID()); 
-        if (gs.showAxes) {
-            drawAxisFrame();
-        }
-        //DrawTrackBounds();
-        // Draw the (first) robot.
-
-        gl.glActiveTexture(GL_TEXTURE1);
-        gl.glUseProgram(robotShader.getProgramID()); 
-        int robot = gl.glGetUniformLocation(robotShader.getProgramID(), "robot");
-        gl.glUniform1i(robot, 1);
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
-        robots[0].draw(gl, glu, glut, 0);
+        gl.glClearColor(0, 0, 0, 1);
+        
+        gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        
+        if (!sun.isInitialized()) {
+            sun.init(gl, gs);
+            sun.setInitialize();
+        }
 
-        // Draw the race track.
+        sun.bindSunFBO(gl); 
+        
+        gl.glClear(GL_COLOR_BUFFER_BIT);
+
+        gl.glClear(GL_DEPTH_BUFFER_BIT);
+        
+        gl.glUseProgram(blackShader.getProgramID());
+
+        reportError("program");
+
+        raceTracks[gs.trackNr].draw(gl, glu, glut);
+
+        terrain.draw(gl, glu, glut);
+        reportError("terrain:");
+
+        gl.glUseProgram(defaultShader.getProgramID()); 
+        gl.glColor3f(1,1,1);
+        
+        sun.move();
+        sun.draw(gl, glu, glut);
+    
+        FloatBuffer screen = FloatBuffer.allocate(3);
+        
+        sun.unbindCurrentFBO(gl, gs);
+        
+                
         gl.glActiveTexture(GL_TEXTURE0);
         gl.glUseProgram(trackShader.getProgramID());
-        int texSampler = gl.glGetUniformLocation(blackShader.getProgramID(), "tex");
+        int texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
         gl.glUniform1i(texSampler, 0);
         raceTracks[gs.trackNr].draw(gl, glu, glut);
         
-        // Draw the terrain.
         
         gl.glUseProgram(terrainShader.getProgramID());
         terrain.draw(gl, glu, glut);
         reportError("terrain:");
         
-        //sun.draw(gl, glu, glut);
-        gl.glUseProgram(sunShader.getProgramID());
         
+        gl.glUseProgram(sunShader.getProgramID());
+
+        gl.glActiveTexture(GL_TEXTURE1);
+        glu.gluProject((float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z(), viewM, projM, viewP, screen);
         int shaft = gl.glGetUniformLocation(sunShader.getProgramID(), "shaftTexture");
         gl.glUniform1i(shaft, 1);
-        int sunPos = gl.glGetUniformLocation(sunShader.getProgramID(), "sunPosition");
-        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
-        int view = gl.glGetUniformLocation(sunShader.getProgramID(), "viewMatrix");
-        gl.glUniformMatrix4fv(view, 1, false, camera.getViewMatrix(gs));
-        int proj = gl.glGetUniformLocation(sunShader.getProgramID(), "projMatrix");
-        gl.glUniformMatrix4fv(proj, 1, false, camera.getProjMatrix(gs));
-        int model = gl.glGetUniformLocation(sunShader.getProgramID(), "modelMatrix");
-        gl.glUniformMatrix4fv(model, 1, false, sun.modelMatrix());
+        int sole = gl.glGetUniformLocation(sunShader.getProgramID(), "screenSun");
+        gl.glUniform2f(sole, screen.get(0), screen.get(1));
         
-        //gl.glActiveTexture(GL_TEXTURE1);
-        //gl.glBindTexture(GL_TEXTURE_2D, sun.getSunTexture());
+        gl.glBindTexture(GL_TEXTURE_2D, sun.getSunTexture());
         
-        //gl.glDisable(GL_DEPTH_TEST);
-        //gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
-        //gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        //sun.renderFSQ(gl);
+        sun.renderFSQ(gl);
     }
     
     /**

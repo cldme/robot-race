@@ -39,12 +39,12 @@ class Camera {
      * Computes eye, center, and up, based on the camera's default mode.
      */
     private void setDefaultMode(GlobalState gs) {
-        
+        center = gs.cnt;
         eye.x = gs.vDist * Math.cos(gs.phi) * Math.cos(gs.theta) + gs.cnt.x;
         eye.y = gs.vDist * Math.cos(gs.phi) * Math.sin(gs.theta) + gs.cnt.y;
         eye.z = gs.vDist * Math.sin(gs.phi) + gs.cnt.z;
         
-        center = gs.cnt;
+        
         //String newLine = System.getProperty("line.separator");
         //System.out.printf(gs.cnt.toString() + newLine);
         
@@ -63,15 +63,23 @@ class Camera {
     public FloatBuffer getViewMatrix (GlobalState gs) {
     
         FloatBuffer buffer = FloatBuffer.allocate(16);
-        Vector forward = gs.cnt.scale(-1).subtract(eye).normalized();
-        Vector u = up.normalized();
-        Vector right = forward.cross(u).normalized();
-        u = right.cross(forward);
+        Vector forward = eye.subtract(gs.cnt).normalized();
+        Vector right = up.cross(forward).normalized();
+        Vector u = forward.cross(right);
         
-        buffer.put((float)right.x()).put((float)u.x()).put((float)forward.scale(-1).x()).put(0);
-        buffer.put((float)right.y()).put((float)u.y()).put((float)forward.scale(-1).y()).put(0);
-        buffer.put((float)right.z()).put((float)u.z()).put((float)forward.scale(-1).z()).put(0);
-        buffer.put((float)right.dot(eye)*-1).put((float)u.dot(eye)*-1).put((float)forward.dot(eye)*-1).put(1);
+//        buffer.put((float)right.x()).put((float)u.x()).put((float)forward.scale(-1).x()).put(0);
+//        buffer.put((float)right.y()).put((float)u.y()).put((float)forward.scale(-1).y()).put(0);
+//        buffer.put((float)right.z()).put((float)u.z()).put((float)forward.scale(-1).z()).put(0);
+//        buffer.put((float)right.dot(eye)*-1).put((float)u.dot(eye)*-1).put((float)forward.dot(eye)*-1).put(1);
+        
+        buffer.put((float)right.x()).put((float)right.y()).put((float)right.z()).put(0);
+        buffer.put((float)u.x()).put((float)u.y()).put((float)u.z()).put(0);
+        buffer.put((float)forward.x()).put((float)forward.y()).put((float)forward.z()).put(0);
+        
+        buffer.put((float)right.dot(eye)).
+               put((float)u.dot(eye)).
+               put((float)forward.dot(eye)).
+               put(1);
         
         buffer.flip();
 
@@ -83,14 +91,26 @@ class Camera {
         FloatBuffer buffer = FloatBuffer.allocate(16);
         float n = 0.1f;
         float f = 100f;
-        float e = 1f / ((float)Math.tan(45f / 2f));
+        float e = 1f / (float)(Math.tan(Math.toRadians(45f)));
         float a = (float)gs.w / (float)gs.h;
         
         buffer.put(e).put(0).put(0).put(0);
         buffer.put(0).put(e/a).put(0).put(0);
-        buffer.put(0).put(0).put(-(f+n)/(f-n)).put(-1);
+        buffer.put(0).put(0).put((-(f+n))/(f-n)).put(-1);
         buffer.put(0).put(0).put(-(2*f*n)/(f-n)).put(0);
-
+//        float n = 0.1f;
+//        float f = 100f;
+//        float scale = (float)Math.tan(Math.toRadians(45f)) * n;
+//        float r = gs.w/gs.h * scale;
+//        float l = -r;
+//        float t = scale;
+//        float b = -t;
+//        
+//        buffer.put(2 * n / (r - 1)).put(0).put(0).put(0);
+//        buffer.put(0).put(2 * n / (t - b)).put(0).put(0);
+//        buffer.put((r + l) / (r - l)).put((t + b) / (t - b)).put(-(f + n) / (f - n)).put(-1);
+//        buffer.put(0).put(0).put(-2 * f * n / (f - n)).put(0);
+        
         buffer.flip();
 
         return buffer;
