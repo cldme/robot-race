@@ -36,8 +36,8 @@ class Terrain {
     public void draw(GL2 gl, GLU glu, GLUT glut) {
 
         //drawSubdivisions(gl, glut);
-        //drawControlPoints(gl, glut);
-        //drawCPConnections(gl, glut);
+        drawControlPoints(gl, glut);
+        drawCPConnections(gl, glut);
         gl.glBegin(GL2.GL_TRIANGLES);
         
         for (int idx = 0, stride = 0; idx < vertexCount * (vertexCount - 1); idx++, stride++) {
@@ -186,6 +186,7 @@ class Terrain {
     }
     
     public void addLeftTriangle(int topLeft, int topRight, int bottomLeft, int bottomRight, boolean rightHanded, GL2 gl) {
+        addNormal(calcNormalLeft(topLeft, topRight, bottomLeft, bottomRight, rightHanded, gl), gl);
         addColor(colors[topLeft], gl);
         addVertex(vertices[topLeft], gl);
         addVertex(vertices[bottomLeft], gl);
@@ -196,6 +197,7 @@ class Terrain {
     }
     
     public void addRightTriangle(int topLeft, int topRight, int bottomLeft, int bottomRight, boolean rightHanded, GL2 gl) {
+        addNormal(calcNormalRight(topLeft, topRight, bottomLeft, bottomRight, rightHanded, gl), gl);
         addColor(colors[topRight], gl);
         addVertex(vertices[topRight], gl);
         if (rightHanded)
@@ -205,5 +207,40 @@ class Terrain {
         addVertex(vertices[bottomRight], gl);
     
     }
+    public Vector calcNormalLeft (int topLeft, int topRight, int bottomLeft, int bottomRight, boolean rightHanded, GL2 gl) {
 
+        Vector v0 = vertices[topLeft];
+        Vector v1 = vertices[bottomLeft];
+        Vector v2;
+        if (rightHanded) {
+            v2 = vertices[bottomRight];
+        } else {
+            v2 = vertices[topRight];
+        }
+        
+        Vector tangentA = v1.subtract(v0);
+        Vector tangentB = v2.subtract(v0);
+        Vector normal = tangentA.cross(tangentB).normalized();
+    
+        return normal;
+    }
+    
+        public Vector calcNormalRight (int topLeft, int topRight, int bottomLeft, int bottomRight, boolean rightHanded, GL2 gl) {
+    
+        Vector v0 = vertices[topRight];
+        Vector v1;
+        if (rightHanded) {
+            v1 = vertices[topLeft];}
+        else {
+            v1 = vertices[bottomLeft];
+        }
+
+        Vector v2 = vertices[bottomRight];
+        
+        Vector tangentA = v1.subtract(v0);
+        Vector tangentB = v2.subtract(v0);
+        Vector normal = tangentA.cross(tangentB).normalized();
+    
+        return normal;
+    }
 }

@@ -35,6 +35,6 @@ void main(void)
         TexCoord += dir;
     }
 
-    gl_FragColor = vec4(vec3(shaft * INV_SAMPLE_COUNT),0.6);
+    gl_FragColor = vec4(vec3(shaft * INV_SAMPLE_COUNT),0.65);
     }
 }

@@ -27,7 +27,7 @@ public class Sun {
     }
     
     void move() {
-        time+=0.001f;
+        time+=0.005f;
         position.x = 100 * Math.cos(time);
         position.y = 100 * Math.sin(time);
         position.z = 25;
@@ -37,6 +37,7 @@ public class Sun {
         gl.glPushMatrix();
         
         gl.glTranslatef((float)position.x(), (float)position.y(), (float)position.z());
+        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, new float[] {(float)position.x(), (float)position.y(), (float)position.z()}, 0);
         glut.glutSolidSphere(10,24,12);
         gl.glPopMatrix();
     }

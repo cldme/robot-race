@@ -159,7 +159,7 @@ public class RobotRace extends Base {
         
         terrain = new Terrain(TerrainUtility.getSubdivisions(), TerrainUtility.getPatches());
         
-        sun = new Sun(new Vector(10,0,0));
+        sun = new Sun(new Vector(10,10,50));
         
         
     }
@@ -174,11 +174,12 @@ public class RobotRace extends Base {
         // Enable blending.
         gl.glEnable(GL_BLEND);
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                
+                        
+        
         // Enable depth testing.
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LESS);
-
+        
         // Enable face culling for improved performance
         //gl.glCullFace(GL_BACK);
         //gl.glEnable(GL_CULL_FACE);
@@ -224,10 +225,7 @@ public class RobotRace extends Base {
         gl.glLoadIdentity();
         
         //Add light source
-        gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[]{0f, 6f, 0f, 0f}, 0);
-        gl.glLightfv(GL_LIGHT0, GL_AMBIENT, new float[]{0.2f,0f,0.4f,1f}, 0);
-        gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0.6f,0f,0f,1f}, 0);
-        gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[]{1f,1f,1f,1f}, 0);
+        
         
         // Update the view according to the camera mode and robot of interest.
         // For camera modes 1 to 4, determine which robot to focus on.
@@ -237,6 +235,10 @@ public class RobotRace extends Base {
         glu.gluLookAt(camera.eye.x(),    camera.eye.y(),    camera.eye.z(),
                       camera.center.x(), camera.center.y(), camera.center.z(),
                       camera.up.x(),     camera.up.y(),     camera.up.z());
+        gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] {(float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z(), 0f}, 0);
+        gl.glLightfv(GL_LIGHT0, GL_AMBIENT, new float[]{0.2f,0f,0.4f,1f}, 0);
+        gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0.6f,0f,0f,1f}, 0);
+        gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[]{1f,1f,1f,1f}, 0);
         gl.glGetFloatv(GL_MODELVIEW_MATRIX, viewM);
     }
     
@@ -245,14 +247,12 @@ public class RobotRace extends Base {
      */
     @Override
     public void drawScene() {
-
+        
         gl.glClear(GL_COLOR_BUFFER_BIT);
 
         gl.glClear(GL_DEPTH_BUFFER_BIT);
-        
+
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        gl.glClearColor(0, 0, 0, 1);
         
         gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         
@@ -262,10 +262,12 @@ public class RobotRace extends Base {
         }
 
         sun.bindSunFBO(gl); 
-        
+
+
         gl.glClear(GL_COLOR_BUFFER_BIT);
 
         gl.glClear(GL_DEPTH_BUFFER_BIT);
+        
         
         gl.glUseProgram(blackShader.getProgramID());
 
@@ -279,24 +281,26 @@ public class RobotRace extends Base {
         gl.glUseProgram(defaultShader.getProgramID()); 
         gl.glColor3f(1,1,1);
         
-        sun.move();
+        //sun.move();
         sun.draw(gl, glu, glut);
     
         FloatBuffer screen = FloatBuffer.allocate(3);
-        
+
         sun.unbindCurrentFBO(gl, gs);
         
-                
         gl.glActiveTexture(GL_TEXTURE0);
         gl.glUseProgram(trackShader.getProgramID());
         int texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
         gl.glUniform1i(texSampler, 0);
         raceTracks[gs.trackNr].draw(gl, glu, glut);
         
-        
+
         gl.glUseProgram(terrainShader.getProgramID());
+        int sunPos = gl.glGetUniformLocation(trackShader.getProgramID(), "sunPosition");
+        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
         terrain.draw(gl, glu, glut);
-        reportError("terrain:");
+        reportError("terrain:");                
+        
         
         
         gl.glUseProgram(sunShader.getProgramID());
@@ -310,7 +314,7 @@ public class RobotRace extends Base {
         
         gl.glBindTexture(GL_TEXTURE_2D, sun.getSunTexture());
         
-        sun.renderFSQ(gl);
+        //sun.renderFSQ(gl);
     }
     
     /**

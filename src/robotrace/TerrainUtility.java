@@ -8,13 +8,13 @@ import java.util.Arrays;
 
 public final class TerrainUtility {
     
-    private final static int P = 4; // PATCHES PER SIDE
-    private final static double PS = 40d / (double)P; // PATCH_SIDE
+    private final static int P = 5; // PATCHES PER SIDE
+    private final static double PS = 100d / (double)P; // PATCH_SIDE
     private final static int SUBDIVISIONS = 24;
-    private final static double S_C = 40d /(double)(P * 3);
-    private final static double C = 20d; // used for corner reference
+    private final static double S_C = 100d /(double)(P * 3);
+    private final static double C = 50d; // used for corner reference
     private final static double S_V = 1d / SUBDIVISIONS;
-    private final static double spread = 1f;
+    private final static double spread = 1.5f;
     private final static double halfSpread = spread / 2d;
     private final static Color[] colors = 
             
@@ -31,21 +31,21 @@ public final class TerrainUtility {
     private final static Vector[][] bezierSurfaces =
             new Vector[][] {
                 
-                {   new Vector(-C          , C,           0),
+                {   new Vector(-C          , C,           8),
                     new Vector(-C +     S_C, C,           0),
-                    new Vector(-C + 2 * S_C, C,           0),
+                    new Vector(-C + 2 * S_C, C,           60),
                     new Vector(-C + 3 * S_C, C,           0),
-                    new Vector(-C          , C -     S_C, 0),
-                    new Vector(-C +     S_C, C -     S_C, 0),
+                    new Vector(-C          , C -     S_C, 56),
+                    new Vector(-C +     S_C, C -     S_C, 50),
                     new Vector(-C + 2 * S_C, C -     S_C, 0),
                     new Vector(-C + 3 * S_C, C -     S_C, 0),
-                    new Vector(-C          , C - 2 * S_C, 0),
-                    new Vector(-C +     S_C, C - 2 * S_C, 0),
-                    new Vector(-C + 2 * S_C, C - 2 * S_C, 0),
+                    new Vector(-C          , C - 2 * S_C, 35),
+                    new Vector(-C +     S_C, C - 2 * S_C, 46),
+                    new Vector(-C + 2 * S_C, C - 2 * S_C, 24),
                     new Vector(-C + 3 * S_C, C - 2 * S_C, 0),
                     new Vector(-C          , C - 3 * S_C, 0),
-                    new Vector(-C +     S_C, C - 3 * S_C, 0),
-                    new Vector(-C + 2 * S_C, C - 3 * S_C, 0),
+                    new Vector(-C +     S_C, C - 3 * S_C, 29),
+                    new Vector(-C + 2 * S_C, C - 3 * S_C, 23),
                     new Vector(-C + 3 * S_C, C - 3 * S_C, 0)  }
                     ,
                 {   new Vector(-C           + PS, C          , 0),
@@ -105,8 +105,8 @@ public final class TerrainUtility {
                     new Vector(-C + 3 * S_C +(4 % P) * PS, C -           (4 / P) * PS, 0),
                     new Vector(-C           +(4 % P) * PS, C -     S_C - (4 / P) * PS, 0),
                     new Vector(-C +     S_C +(4 % P) * PS, C -     S_C - (4 / P) * PS, 0),
-                    new Vector(-C + 2 * S_C +(4 % P) * PS, C -     S_C - (4 / P) * PS, 55),
-                    new Vector(-C + 3 * S_C +(4 % P) * PS, C -     S_C - (4 / P) * PS, 55),
+                    new Vector(-C + 2 * S_C +(4 % P) * PS, C -     S_C - (4 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(4 % P) * PS, C -     S_C - (4 / P) * PS, 0),
                     new Vector(-C           +(4 % P) * PS, C - 2 * S_C - (4 / P) * PS, 0),
                     new Vector(-C +     S_C +(4 % P) * PS, C - 2 * S_C - (4 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(4 % P) * PS, C - 2 * S_C - (4 / P) * PS, 0),
@@ -117,12 +117,12 @@ public final class TerrainUtility {
                     new Vector(-C + 3 * S_C +(4 % P) * PS, C - 3 * S_C - (4 / P) * PS, 0)  }
                     ,
                 {   new Vector(-C           +(5 % P) * PS, C -           (5 / P) * PS, 0),
-                    new Vector(-C +     S_C +(5 % P) * PS, C -           (5 / P) * PS, 0),
-                    new Vector(-C + 2 * S_C +(5 % P) * PS, C -           (5 / P) * PS, 0),
+                    new Vector(-C +     S_C +(5 % P) * PS, C -           (5 / P) * PS, 29),
+                    new Vector(-C + 2 * S_C +(5 % P) * PS, C -           (5 / P) * PS, 23),
                     new Vector(-C + 3 * S_C +(5 % P) * PS, C -           (5 / P) * PS, 0),
-                    new Vector(-C           +(5 % P) * PS, C -     S_C - (5 / P) * PS, 55),
-                    new Vector(-C +     S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 55),
-                    new Vector(-C + 2 * S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 0),
+                    new Vector(-C           +(5 % P) * PS, C -     S_C - (5 / P) * PS, 0),
+                    new Vector(-C +     S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 58),
+                    new Vector(-C + 2 * S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 34),
                     new Vector(-C + 3 * S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 0),
                     new Vector(-C           +(5 % P) * PS, C - 2 * S_C - (5 / P) * PS, 0),
                     new Vector(-C +     S_C +(5 % P) * PS, C - 2 * S_C - (5 / P) * PS, 0),
@@ -135,7 +135,7 @@ public final class TerrainUtility {
                     ,
                 {   new Vector(-C           +(6 % P) * PS, C -           (6 / P) * PS, 0),
                     new Vector(-C +     S_C +(6 % P) * PS, C -           (6 / P) * PS, 0),
-                    new Vector(-C + 2 * S_C +(6 % P) * PS, C -           (6 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(6 % P) * PS, C -           (6 / P) * PS, 40),
                     new Vector(-C + 3 * S_C +(6 % P) * PS, C -           (6 / P) * PS, 0),
                     new Vector(-C           +(6 % P) * PS, C -     S_C - (6 / P) * PS, 0),
                     new Vector(-C +     S_C +(6 % P) * PS, C -     S_C - (6 / P) * PS, 0),
@@ -223,12 +223,12 @@ public final class TerrainUtility {
                     new Vector(-C + 2 * S_C +(11 % P) * PS, C -           (11 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(11 % P) * PS, C -           (11 / P) * PS, 0),
                     new Vector(-C           +(11 % P) * PS, C -     S_C - (11 / P) * PS, 0),
-                    new Vector(-C +     S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, 0),
-                    new Vector(-C + 2 * S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, 0),
+                    new Vector(-C +     S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, -10),
+                    new Vector(-C + 2 * S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, -10),
                     new Vector(-C + 3 * S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, 0),
                     new Vector(-C           +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, 0),
-                    new Vector(-C +     S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, 0),
-                    new Vector(-C + 2 * S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, 0),
+                    new Vector(-C +     S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, -10),
+                    new Vector(-C + 2 * S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, -10),
                     new Vector(-C + 3 * S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, 0),
                     new Vector(-C           +(11 % P) * PS, C - 3 * S_C - (11 / P) * PS, 0),
                     new Vector(-C +     S_C +(11 % P) * PS, C - 3 * S_C - (11 / P) * PS, 0),
@@ -302,6 +302,159 @@ public final class TerrainUtility {
                     new Vector(-C +     S_C +(15 % P) * PS, C - 3 * S_C - (15 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(15 % P) * PS, C - 3 * S_C - (15 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(15 % P) * PS, C - 3 * S_C - (15 / P) * PS, 0)  }
+                    ,
+                {   new Vector(-C           +(16 % P) * PS, C -           (16 / P) * PS, 0),
+                    new Vector(-C +     S_C +(16 % P) * PS, C -           (16 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(16 % P) * PS, C -           (16 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(16 % P) * PS, C -           (16 / P) * PS, 0),
+                    new Vector(-C           +(16 % P) * PS, C -     S_C - (16 / P) * PS, 0),
+                    new Vector(-C +     S_C +(16 % P) * PS, C -     S_C - (16 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(16 % P) * PS, C -     S_C - (16 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(16 % P) * PS, C -     S_C - (16 / P) * PS, 0),
+                    new Vector(-C           +(16 % P) * PS, C - 2 * S_C - (16 / P) * PS, 0),
+                    new Vector(-C +     S_C +(16 % P) * PS, C - 2 * S_C - (16 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(16 % P) * PS, C - 2 * S_C - (16 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(16 % P) * PS, C - 2 * S_C - (16 / P) * PS, 0),
+                    new Vector(-C           +(16 % P) * PS, C - 3 * S_C - (16 / P) * PS, 0),
+                    new Vector(-C +     S_C +(16 % P) * PS, C - 3 * S_C - (16 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(16 % P) * PS, C - 3 * S_C - (16 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(16 % P) * PS, C - 3 * S_C - (16 / P) * PS, 0)  }
+                    ,
+                {   new Vector(-C           +(17 % P) * PS, C -           (17 / P) * PS, 0),
+                    new Vector(-C +     S_C +(17 % P) * PS, C -           (17 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(17 % P) * PS, C -           (17 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(17 % P) * PS, C -           (17 / P) * PS, 0),
+                    new Vector(-C           +(17 % P) * PS, C -     S_C - (17 / P) * PS, 0),
+                    new Vector(-C +     S_C +(17 % P) * PS, C -     S_C - (17 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(17 % P) * PS, C -     S_C - (17 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(17 % P) * PS, C -     S_C - (17 / P) * PS, 0),
+                    new Vector(-C           +(17 % P) * PS, C - 2 * S_C - (17 / P) * PS, 0),
+                    new Vector(-C +     S_C +(17 % P) * PS, C - 2 * S_C - (17 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(17 % P) * PS, C - 2 * S_C - (17 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(17 % P) * PS, C - 2 * S_C - (17 / P) * PS, 0),
+                    new Vector(-C           +(17 % P) * PS, C - 3 * S_C - (17 / P) * PS, 0),
+                    new Vector(-C +     S_C +(17 % P) * PS, C - 3 * S_C - (17 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(17 % P) * PS, C - 3 * S_C - (17 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(17 % P) * PS, C - 3 * S_C - (17 / P) * PS, 0)  }
+                    ,
+                {   new Vector(-C           +(18 % P) * PS, C -           (18 / P) * PS, 0),
+                    new Vector(-C +     S_C +(18 % P) * PS, C -           (18 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(18 % P) * PS, C -           (18 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(18 % P) * PS, C -           (18 / P) * PS, 0),
+                    new Vector(-C           +(18 % P) * PS, C -     S_C - (18 / P) * PS, 0),
+                    new Vector(-C +     S_C +(18 % P) * PS, C -     S_C - (18 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(18 % P) * PS, C -     S_C - (18 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(18 % P) * PS, C -     S_C - (18 / P) * PS, 0),
+                    new Vector(-C           +(18 % P) * PS, C - 2 * S_C - (18 / P) * PS, 0),
+                    new Vector(-C +     S_C +(18 % P) * PS, C - 2 * S_C - (18 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(18 % P) * PS, C - 2 * S_C - (18 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(18 % P) * PS, C - 2 * S_C - (18 / P) * PS, 0),
+                    new Vector(-C           +(18 % P) * PS, C - 3 * S_C - (18 / P) * PS, 0),
+                    new Vector(-C +     S_C +(18 % P) * PS, C - 3 * S_C - (18 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(18 % P) * PS, C - 3 * S_C - (18 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(18 % P) * PS, C - 3 * S_C - (18 / P) * PS, 0)  }
+                    ,
+                {   new Vector(-C           +(19 % P) * PS, C -           (19 / P) * PS, 0),
+                    new Vector(-C +     S_C +(19 % P) * PS, C -           (19 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(19 % P) * PS, C -           (19 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(19 % P) * PS, C -           (19 / P) * PS, 0),
+                    new Vector(-C           +(19 % P) * PS, C -     S_C - (19 / P) * PS, 0),
+                    new Vector(-C +     S_C +(19 % P) * PS, C -     S_C - (19 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(19 % P) * PS, C -     S_C - (19 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(19 % P) * PS, C -     S_C - (19 / P) * PS, 0),
+                    new Vector(-C           +(19 % P) * PS, C - 2 * S_C - (19 / P) * PS, 0),
+                    new Vector(-C +     S_C +(19 % P) * PS, C - 2 * S_C - (19 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(19 % P) * PS, C - 2 * S_C - (19 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(19 % P) * PS, C - 2 * S_C - (19 / P) * PS, 0),
+                    new Vector(-C           +(19 % P) * PS, C - 3 * S_C - (19 / P) * PS, 0),
+                    new Vector(-C +     S_C +(19 % P) * PS, C - 3 * S_C - (19 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(19 % P) * PS, C - 3 * S_C - (19 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(19 % P) * PS, C - 3 * S_C - (19 / P) * PS, 0)  }
+                    ,
+                {   new Vector(-C           +(20 % P) * PS, C -           (20 / P) * PS, 0),
+                    new Vector(-C +     S_C +(20 % P) * PS, C -           (20 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(20 % P) * PS, C -           (20 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(20 % P) * PS, C -           (20 / P) * PS, 0),
+                    new Vector(-C           +(20 % P) * PS, C -     S_C - (20 / P) * PS, 0),
+                    new Vector(-C +     S_C +(20 % P) * PS, C -     S_C - (20 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(20 % P) * PS, C -     S_C - (20 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(20 % P) * PS, C -     S_C - (20 / P) * PS, 0),
+                    new Vector(-C           +(20 % P) * PS, C - 2 * S_C - (20 / P) * PS, 0),
+                    new Vector(-C +     S_C +(20 % P) * PS, C - 2 * S_C - (20 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(20 % P) * PS, C - 2 * S_C - (20 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(20 % P) * PS, C - 2 * S_C - (20 / P) * PS, 0),
+                    new Vector(-C           +(20 % P) * PS, C - 3 * S_C - (20 / P) * PS, 0),
+                    new Vector(-C +     S_C +(20 % P) * PS, C - 3 * S_C - (20 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(20 % P) * PS, C - 3 * S_C - (20 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(20 % P) * PS, C - 3 * S_C - (20 / P) * PS, 0)  }
+                    ,
+                {   new Vector(-C           +(21 % P) * PS, C -           (21 / P) * PS, 0),
+                    new Vector(-C +     S_C +(21 % P) * PS, C -           (21 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(21 % P) * PS, C -           (21 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(21 % P) * PS, C -           (21 / P) * PS, 0),
+                    new Vector(-C           +(21 % P) * PS, C -     S_C - (21 / P) * PS, 0),
+                    new Vector(-C +     S_C +(21 % P) * PS, C -     S_C - (21 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(21 % P) * PS, C -     S_C - (21 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(21 % P) * PS, C -     S_C - (21 / P) * PS, 0),
+                    new Vector(-C           +(21 % P) * PS, C - 2 * S_C - (21 / P) * PS, 0),
+                    new Vector(-C +     S_C +(21 % P) * PS, C - 2 * S_C - (21 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(21 % P) * PS, C - 2 * S_C - (21 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(21 % P) * PS, C - 2 * S_C - (21 / P) * PS, 0),
+                    new Vector(-C           +(21 % P) * PS, C - 3 * S_C - (21 / P) * PS, 0),
+                    new Vector(-C +     S_C +(21 % P) * PS, C - 3 * S_C - (21 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(21 % P) * PS, C - 3 * S_C - (21 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(21 % P) * PS, C - 3 * S_C - (21 / P) * PS, 0)  }
+                    ,
+                {   new Vector(-C           +(22 % P) * PS, C -           (22 / P) * PS, 0),
+                    new Vector(-C +     S_C +(22 % P) * PS, C -           (22 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(22 % P) * PS, C -           (22 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(22 % P) * PS, C -           (22 / P) * PS, 0),
+                    new Vector(-C           +(22 % P) * PS, C -     S_C - (22 / P) * PS, 0),
+                    new Vector(-C +     S_C +(22 % P) * PS, C -     S_C - (22 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(22 % P) * PS, C -     S_C - (22 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(22 % P) * PS, C -     S_C - (22 / P) * PS, 0),
+                    new Vector(-C           +(22 % P) * PS, C - 2 * S_C - (22 / P) * PS, 0),
+                    new Vector(-C +     S_C +(22 % P) * PS, C - 2 * S_C - (22 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(22 % P) * PS, C - 2 * S_C - (22 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(22 % P) * PS, C - 2 * S_C - (22 / P) * PS, 0),
+                    new Vector(-C           +(22 % P) * PS, C - 3 * S_C - (22 / P) * PS, 0),
+                    new Vector(-C +     S_C +(22 % P) * PS, C - 3 * S_C - (22 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(22 % P) * PS, C - 3 * S_C - (22 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(22 % P) * PS, C - 3 * S_C - (22 / P) * PS, 0)  }
+                    ,
+                {   new Vector(-C           +(23 % P) * PS, C -           (23 / P) * PS, 0),
+                    new Vector(-C +     S_C +(23 % P) * PS, C -           (23 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(23 % P) * PS, C -           (23 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(23 % P) * PS, C -           (23 / P) * PS, 0),
+                    new Vector(-C           +(23 % P) * PS, C -     S_C - (23 / P) * PS, 0),
+                    new Vector(-C +     S_C +(23 % P) * PS, C -     S_C - (23 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(23 % P) * PS, C -     S_C - (23 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(23 % P) * PS, C -     S_C - (23 / P) * PS, 0),
+                    new Vector(-C           +(23 % P) * PS, C - 2 * S_C - (23 / P) * PS, 0),
+                    new Vector(-C +     S_C +(23 % P) * PS, C - 2 * S_C - (23 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(23 % P) * PS, C - 2 * S_C - (23 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(23 % P) * PS, C - 2 * S_C - (23 / P) * PS, 0),
+                    new Vector(-C           +(23 % P) * PS, C - 3 * S_C - (23 / P) * PS, 0),
+                    new Vector(-C +     S_C +(23 % P) * PS, C - 3 * S_C - (23 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(23 % P) * PS, C - 3 * S_C - (23 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(23 % P) * PS, C - 3 * S_C - (23 / P) * PS, 0)  }
+                    ,
+                {   new Vector(-C           +(24 % P) * PS, C -           (24 / P) * PS, 0),
+                    new Vector(-C +     S_C +(24 % P) * PS, C -           (24 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(24 % P) * PS, C -           (24 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(24 % P) * PS, C -           (24 / P) * PS, 0),
+                    new Vector(-C           +(24 % P) * PS, C -     S_C - (24 / P) * PS, 0),
+                    new Vector(-C +     S_C +(24 % P) * PS, C -     S_C - (24 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(24 % P) * PS, C -     S_C - (24 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(24 % P) * PS, C -     S_C - (24 / P) * PS, 0),
+                    new Vector(-C           +(24 % P) * PS, C - 2 * S_C - (24 / P) * PS, 0),
+                    new Vector(-C +     S_C +(24 % P) * PS, C - 2 * S_C - (24 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(24 % P) * PS, C - 2 * S_C - (24 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(24 % P) * PS, C - 2 * S_C - (24 / P) * PS, 0),
+                    new Vector(-C           +(24 % P) * PS, C - 3 * S_C - (24 / P) * PS, 0),
+                    new Vector(-C +     S_C +(24 % P) * PS, C - 3 * S_C - (24 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(24 % P) * PS, C - 3 * S_C - (24 / P) * PS, 0),
+                    new Vector(-C + 3 * S_C +(24 % P) * PS, C - 3 * S_C - (24 / P) * PS, 0)  }
             };
     
     
@@ -355,31 +508,7 @@ public final class TerrainUtility {
     
         return getPointBezier(v, uCurve[0], uCurve[1], uCurve[2], uCurve[3]);
     }
-    
-    public static Vector dUBezier (double u, double v, Vector[] cPs) {
-        
-        Vector P[] = new Vector[4];
-        Vector vCurve[] = new Vector[4];
-        for (int i = 0; i < 4; ++i) {
-            P[0] = cPs[i];
-            P[1] = cPs[4 + i];
-            P[2] = cPs[8 + i];
-            P[3] = cPs[12 + i];
-            vCurve[i] = getPointBezier(v, P[0], P[1], P[2], P[3]);
-        } 
-    
-        return getTangentBezier(u, vCurve[0], vCurve[1], vCurve[2], vCurve[3]);
-    }
-    
-    public static Vector dVBezier (double u, double v, Vector[] cPs) {
-    
-        Vector uCurve[] = new Vector[4];
-        for (int i = 0; i < 4; ++i) {
-            uCurve[i] = getPointBezier(u, cPs[0 + 4*i],cPs[1 + 4*i],cPs[2 + 4*i],cPs[3 + 4*i]);
-        } 
-    
-        return getTangentBezier(v, uCurve[0], uCurve[1], uCurve[2], uCurve[3]);
-    }
+
     
     public static double[][] generateHeights () {
         
@@ -399,19 +528,6 @@ public final class TerrainUtility {
 //    
 //    
 //    
-//    }
-//    
-//    public Vector calcNormal (int i0, int i1, int i2) {
-//    
-//        Vector v0 = vertices[i0];
-//        Vector v1 = vertices[i1];
-//        Vector v2 = vertices[i2];
-//        
-//        Vector tangentA = v1.subtract(v0);
-//        Vector tangentB = v2.subtract(v0);
-//        Vector normal = tangentA.cross(tangentB).normalized();
-//    
-//        return normal;
 //    }
     
     public static int getPatchUV (double u, double v) {
