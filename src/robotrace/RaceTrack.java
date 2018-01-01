@@ -29,30 +29,30 @@ abstract class RaceTrack {
      */
     public void draw(GL2 gl, GLU glu, GLUT glut) {
         
-        gl.glBegin(GL_QUADS);
-        
-        gl.glVertex3f(10, -5, 0);
-        gl.glVertex3f(10, -5, 10);
-        gl.glVertex3f(10, -2, 10);
-        gl.glVertex3f(10, -2, 0);
-        
-        gl.glVertex3f(10, 1, 0);
-        gl.glVertex3f(10, 1, 10);
-        gl.glVertex3f(10, 4, 10);
-        gl.glVertex3f(10, 4, 0);
-        
-        gl.glVertex3f(10, 7, 0);
-        gl.glVertex3f(10, 7, 10);
-        gl.glVertex3f(10, 10, 10);
-        gl.glVertex3f(10, 10, 0);
-        
-        gl.glVertex3f(10, 13, 0);
-        gl.glVertex3f(10, 13, 10);
-        gl.glVertex3f(10, 16, 10);
-        gl.glVertex3f(10, 16, 0);
-        
-        
-        gl.glEnd();
+//        gl.glBegin(GL_QUADS);
+//        
+//        gl.glVertex3f(10, -5, 0);
+//        gl.glVertex3f(10, -5, 10);
+//        gl.glVertex3f(10, -2, 10);
+//        gl.glVertex3f(10, -2, 0);
+//        
+//        gl.glVertex3f(10, 1, 0);
+//        gl.glVertex3f(10, 1, 10);
+//        gl.glVertex3f(10, 4, 10);
+//        gl.glVertex3f(10, 4, 0);
+//        
+//        gl.glVertex3f(10, 7, 0);
+//        gl.glVertex3f(10, 7, 10);
+//        gl.glVertex3f(10, 10, 10);
+//        gl.glVertex3f(10, 10, 0);
+//        
+//        gl.glVertex3f(10, 13, 0);
+//        gl.glVertex3f(10, 13, 10);
+//        gl.glVertex3f(10, 16, 10);
+//        gl.glVertex3f(10, 16, 0);
+//        
+//        
+//        gl.glEnd();
         Textures.track.bind(gl);
         Textures.track.setTexParameteri(gl, GL_TEXTURE_WRAP_T, GL_REPEAT);
         drawTop(gl);

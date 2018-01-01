@@ -16,6 +16,7 @@ public class ShaderPrograms {
     public static ShaderProgram terrainShader;
     public static ShaderProgram blackShader;
     public static ShaderProgram sunShader;
+    public static ShaderProgram waterShader;
     
     public static void setupShaders(GL2 gl, GLU glu) {
         defaultShader = new ShaderProgram(gl, glu, "shaderPrograms/Default/vertex.glsl", null, "shaderPrograms/Default/fragment.glsl");
@@ -24,6 +25,7 @@ public class ShaderPrograms {
         terrainShader = new ShaderProgram(gl, glu, "shaderPrograms/Terrain/vertex.glsl", null, "shaderPrograms/Terrain/fragment.glsl");
         blackShader = new ShaderProgram(gl, glu, "shaderPrograms/Black/vertex.glsl", null, "shaderPrograms/Black/fragment.glsl");
         sunShader = new ShaderProgram(gl, glu, "shaderPrograms/Sun/vertex.glsl", null, "shaderPrograms/Sun/fragment.glsl");
+        waterShader = new ShaderProgram(gl, glu, "shaderPrograms/Water/vertex.glsl", null, "shaderPrograms/Water/fragment.glsl");
     }
     
 }

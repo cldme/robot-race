@@ -1,14 +1,11 @@
 #version 120
 
-
-uniform vec4 plane;
+varying vec4 clipSpace;
 
 void main()
 {
-    //vec4 worldPosition = gl_ModelMatrix
-
-    //gl_ClipDistance[0] = 
-
-    gl_Position    = gl_ModelViewProjectionMatrix * gl_Vertex;      // model view transform
+    clipSpace = gl_ModelViewProjectionMatrix * gl_Vertex;
+    gl_TexCoord[0] = gl_MultiTexCoord0;
+    gl_Position    = clipSpace;
     gl_FrontColor = gl_Color;
 }

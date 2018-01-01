@@ -74,9 +74,14 @@ public class RobotRace extends Base {
     private final Terrain terrain;
     
     private final Sun sun;
+    
+    private final Water water;
+    
+    private final WaterFrameBuffers waterFrameBuffers;
     FloatBuffer viewM = FloatBuffer.allocate(16);
     FloatBuffer projM = FloatBuffer.allocate(16);
     IntBuffer viewP = IntBuffer.allocate(4);
+    boolean test = false;
 
     /**
      * Constructs this robot race by initializing robots,
@@ -159,9 +164,12 @@ public class RobotRace extends Base {
         
         terrain = new Terrain(TerrainUtility.getSubdivisions(), TerrainUtility.getPatches());
         
-        sun = new Sun(new Vector(10,10,50));
+        sun = new Sun(new Vector(0, 0, 100));
         
+        water = new Water(new Vector(-20,0,-1.3f), 20);
         
+        waterFrameBuffers = new WaterFrameBuffers();
+
     }
     
     /**
@@ -225,20 +233,18 @@ public class RobotRace extends Base {
         gl.glLoadIdentity();
         
         //Add light source
-        
-        
-        // Update the view according to the camera mode and robot of interest.
-        // For camera modes 1 to 4, determine which robot to focus on.
-        camera.update(gs, robots[0]);
-        
-        
-        glu.gluLookAt(camera.eye.x(),    camera.eye.y(),    camera.eye.z(),
-                      camera.center.x(), camera.center.y(), camera.center.z(),
-                      camera.up.x(),     camera.up.y(),     camera.up.z());
         gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] {(float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z(), 0f}, 0);
         gl.glLightfv(GL_LIGHT0, GL_AMBIENT, new float[]{0.2f,0f,0.4f,1f}, 0);
         gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0.6f,0f,0f,1f}, 0);
         gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[]{1f,1f,1f,1f}, 0);
+        
+        // Update the view according to the camera mode and robot of interest.
+        // For camera modes 1 to 4, determine which robot to focus on.
+        glu.gluLookAt(camera.eye.x(),    camera.eye.y(),    camera.eye.z(),
+                      camera.center.x(), camera.center.y(), camera.center.z(),
+                      camera.up.x(),     camera.up.y(),     camera.up.z());
+        
+        camera.update(gs, robots[0]);
         gl.glGetFloatv(GL_MODELVIEW_MATRIX, viewM);
     }
     
@@ -248,6 +254,8 @@ public class RobotRace extends Base {
     @Override
     public void drawScene() {
         
+        gl.glClearColor(0, 0, 0, 1);
+        
         gl.glClear(GL_COLOR_BUFFER_BIT);
 
         gl.glClear(GL_DEPTH_BUFFER_BIT);
@@ -256,63 +264,167 @@ public class RobotRace extends Base {
         
         gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         
-        if (!sun.isInitialized()) {
-            sun.init(gl, gs);
-            sun.setInitialize();
+//        if (!sun.isInitialized()) {
+//            sun.init(gl, gs);
+//            sun.setInitialize();
+//        }
+        
+        //=========================================WATER REFLECTION=================================================
+
+        if (!waterFrameBuffers.isInitialized()) {
+            waterFrameBuffers.init(gl, gs);
+            waterFrameBuffers.setInitialize();
         }
-
-        sun.bindSunFBO(gl); 
-
-
+        
+        waterFrameBuffers.bindReflectionFrameBuffer(gl, gs);
+        
         gl.glClear(GL_COLOR_BUFFER_BIT);
 
         gl.glClear(GL_DEPTH_BUFFER_BIT);
         
-        
-        gl.glUseProgram(blackShader.getProgramID());
-
-        reportError("program");
-
-        raceTracks[gs.trackNr].draw(gl, glu, glut);
-
-        terrain.draw(gl, glu, glut);
-        reportError("terrain:");
-
-        gl.glUseProgram(defaultShader.getProgramID()); 
-        gl.glColor3f(1,1,1);
+        gl.glEnable(GL_CLIP_DISTANCE0);
         
         //sun.move();
-        sun.draw(gl, glu, glut);
-    
-        FloatBuffer screen = FloatBuffer.allocate(3);
-
-        sun.unbindCurrentFBO(gl, gs);
-        
-        gl.glActiveTexture(GL_TEXTURE0);
-        gl.glUseProgram(trackShader.getProgramID());
-        int texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
-        gl.glUniform1i(texSampler, 0);
-        raceTracks[gs.trackNr].draw(gl, glu, glut);
-        
 
         gl.glUseProgram(terrainShader.getProgramID());
-        int sunPos = gl.glGetUniformLocation(trackShader.getProgramID(), "sunPosition");
+        int clipPlane = gl.glGetUniformLocation(terrainShader.getProgramID(), "plane");
+        gl.glUniform4f(clipPlane, 0, 0, 1, -water.getHeight());
+        int sunPos = gl.glGetUniformLocation(terrainShader.getProgramID(), "sunPosition");
         gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
+        int cameraPos = gl.glGetUniformLocation(terrainShader.getProgramID(), "cameraPosition");
+        gl.glUniform3f(cameraPos, (float)camera.eye.x(), (float)camera.eye.y(), (float)camera.eye.z());
+        
+//        if (!test) {
+//        camera.invertPitch(gs, water);
+//        test = true;
+//        }
+       
+        camera.invertPitch(gs, water);
+        setView();
         terrain.draw(gl, glu, glut);
-        reportError("terrain:");                
         
-        
-        
-        gl.glUseProgram(sunShader.getProgramID());
+        camera.invertPitch(gs, water);
+        setView();
 
-        gl.glActiveTexture(GL_TEXTURE1);
-        glu.gluProject((float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z(), viewM, projM, viewP, screen);
-        int shaft = gl.glGetUniformLocation(sunShader.getProgramID(), "shaftTexture");
-        gl.glUniform1i(shaft, 1);
-        int sole = gl.glGetUniformLocation(sunShader.getProgramID(), "screenSun");
-        gl.glUniform2f(sole, screen.get(0), screen.get(1));
+        gl.glDisable(GL_CLIP_DISTANCE0);
         
-        gl.glBindTexture(GL_TEXTURE_2D, sun.getSunTexture());
+        waterFrameBuffers.bindRefractionFrameBuffer(gl, gs);
+        
+        gl.glUseProgram(terrainShader.getProgramID());
+        clipPlane = gl.glGetUniformLocation(terrainShader.getProgramID(), "plane");
+        gl.glUniform4f(clipPlane, 0, 0, -1, -water.getHeight());
+        sunPos = gl.glGetUniformLocation(terrainShader.getProgramID(), "sunPosition");
+        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
+        
+        terrain.draw(gl, glu, glut);
+        
+        waterFrameBuffers.unbindCurrentFBO(gl, gs);
+        
+        gl.glUseProgram(terrainShader.getProgramID());
+        terrain.draw(gl, glu, glut);
+        
+        gl.glUseProgram(waterShader.getProgramID());
+        
+        int reflection = gl.glGetUniformLocation(waterShader.getProgramID(), "reflectionTexture");
+        int refraction = gl.glGetUniformLocation(waterShader.getProgramID(), "refractionTexture");
+        gl.glActiveTexture(GL_TEXTURE2);
+        gl.glBindTexture(GL_TEXTURE_2D, waterFrameBuffers.getReflectionTexture());
+        gl.glUniform1i(reflection, 2);
+        gl.glActiveTexture(GL_TEXTURE1);
+        gl.glBindTexture(GL_TEXTURE_2D, waterFrameBuffers.getRefractionTexture());
+        gl.glUniform1i(refraction, 1);
+        
+        water.draw(gl, glu, glut);
+        
+
+        
+//        gl.glMatrixMode (GL_MODELVIEW);
+//        gl.glPushMatrix ();
+//        gl.glLoadIdentity ();
+//        gl.glMatrixMode (GL_PROJECTION);
+//        gl.glPushMatrix ();
+//        gl.glLoadIdentity ();
+//        gl.glBegin (GL_QUADS);
+//        gl.glTexCoord2i(0, 0);
+//        gl.glVertex3i (-1, -1, -1);
+//        gl.glTexCoord2i(1, 0);
+//        gl.glVertex3i (1, -1, -1);
+//        gl.glTexCoord2i(1, 1);
+//        gl.glVertex3i (1, 1, -1);
+//        gl.glTexCoord2i(0, 1);
+//        gl.glVertex3i (-1, 1, -1);
+//        gl.glEnd ();
+//        gl.glPopMatrix ();
+//        gl.glMatrixMode (GL_MODELVIEW);
+//        gl.glPopMatrix ();
+
+        
+        //=========================================RENDER SUN DISK=================================================
+        
+//        sun.bindSunFBO(gl); 
+//
+//
+//        gl.glClear(GL_COLOR_BUFFER_BIT);
+//
+//        gl.glClear(GL_DEPTH_BUFFER_BIT);
+//        
+//        
+//        gl.glUseProgram(blackShader.getProgramID());
+//
+//        reportError("program");
+//
+//        raceTracks[gs.trackNr].draw(gl, glu, glut);
+//
+//        terrain.draw(gl, glu, glut);
+//        reportError("terrain:");
+//
+//        gl.glUseProgram(defaultShader.getProgramID()); 
+//        
+//        gl.glColor3f(1,1,1);
+//        
+//        sun.move();
+//        sun.draw(gl, glu, glut);
+//    
+//        FloatBuffer screen = FloatBuffer.allocate(3);
+//
+//        sun.unbindCurrentFBO(gl, gs);
+        
+        
+        //=========================================RENDER SCENE=================================================
+        
+        
+//        gl.glActiveTexture(GL_TEXTURE0);
+//        gl.glUseProgram(trackShader.getProgramID());
+//        int texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
+//        gl.glUniform1i(texSampler, 0);
+//        raceTracks[gs.trackNr].draw(gl, glu, glut);
+//
+//        gl.glUseProgram(terrainShader.getProgramID());
+//        int sunPos = gl.glGetUniformLocation(trackShader.getProgramID(), "sunPosition");
+//        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
+//        terrain.draw(gl, glu, glut);
+//        reportError("terrain:");                
+//
+//        gl.glUseProgram(defaultShader.getProgramID());
+//        gl.glColor3f(0,0,1);
+//        water.draw(gl, glu, glut);
+
+        
+
+        //gl.glUseProgram(sunShader.getProgramID());
+
+        //=========================================TEMPORARY RENDER OF SUN=================================================
+        
+//        gl.glActiveTexture(GL_TEXTURE1);
+//        glu.gluProject((float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z(), viewM, projM, viewP, screen);
+//        int shaft = gl.glGetUniformLocation(sunShader.getProgramID(), "shaftTexture");
+//        gl.glUniform1i(shaft, 1);
+//        int sole = gl.glGetUniformLocation(sunShader.getProgramID(), "screenSun");
+//        gl.glUniform2f(sole, screen.get(0), screen.get(1));
+//        int viewPortPix = gl.glGetUniformLocation(sunShader.getProgramID(), "WH");
+//        gl.glUniform2f(viewPortPix, gs.w, gs.h);
+//        
+//        gl.glBindTexture(GL_TEXTURE_2D, sun.getSunTexture());
         
         //sun.renderFSQ(gl);
     }

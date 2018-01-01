@@ -4,6 +4,7 @@ varying vec4 clipSpace;
 uniform vec3 sunPosition;
 uniform sampler2D shaftTexture;   // scene texture
 uniform vec2 screenSun;
+uniform vec2 WH;
 
 const float SAMPLE_COUNT = 100.0;
 const float INV_SAMPLE_COUNT = 0.01;
@@ -12,7 +13,9 @@ const float DECAY = 0.0001;
 
 void main(void)
 {
-    vec2 sun = screenSun/800;
+    vec2 sun = screenSun;
+    sun.x /= WH.x;
+    sun.y /= WH.y;
 
     vec2 TexCoord = vec2(gl_TexCoord[0].st);
 
@@ -35,6 +38,6 @@ void main(void)
         TexCoord += dir;
     }
 
-    gl_FragColor = vec4(vec3(shaft * INV_SAMPLE_COUNT),0.65);
+    gl_FragColor = vec4(vec3(shaft * INV_SAMPLE_COUNT),0.75);
     }
 }

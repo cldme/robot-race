@@ -36,8 +36,8 @@ class Terrain {
     public void draw(GL2 gl, GLU glu, GLUT glut) {
 
         //drawSubdivisions(gl, glut);
-        drawControlPoints(gl, glut);
-        drawCPConnections(gl, glut);
+        //drawControlPoints(gl, glut);
+        //drawCPConnections(gl, glut);
         gl.glBegin(GL2.GL_TRIANGLES);
         
         for (int idx = 0, stride = 0; idx < vertexCount * (vertexCount - 1); idx++, stride++) {

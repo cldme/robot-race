@@ -27,10 +27,10 @@ public class Sun {
     }
     
     void move() {
-        time+=0.005f;
-        position.x = 100 * Math.cos(time);
-        position.y = 100 * Math.sin(time);
-        position.z = 25;
+        time+=0.006f;
+        position.x = 50 * Math.cos(time);
+        position.y = 50 * Math.sin(time);
+        position.z = 20;
     }
     
     public void draw(GL2 gl, GLU glu, GLUT glut) {
