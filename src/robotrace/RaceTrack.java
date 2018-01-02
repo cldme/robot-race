@@ -64,7 +64,6 @@ abstract class RaceTrack {
         drawOuter(gl);
         drawInner(gl);
         drawBottom(gl);
-        gl.glBindTexture(GL_TEXTURE_2D, 0);
     }
     void drawBezier(GL2 gl) {
     

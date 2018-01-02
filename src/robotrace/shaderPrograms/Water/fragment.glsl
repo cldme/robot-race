@@ -1,6 +1,5 @@
 #version 120
 
-
 uniform sampler2D reflectionTexture;
 uniform sampler2D refractionTexture;
 uniform sampler2D normalMap;
@@ -30,10 +29,6 @@ void main()
     vec2 reflectionTexCoords = vec2(ndc.x, -ndc.y);
     vec2 refractionTexCoords = vec2(ndc.x, ndc.y);
 
-    //vec2 distortion1 = (texture2D(dudvMap, vec2(texCoords.x + waveTime, texCoords.y)).rg * 2.0 - 1.0) * waveStrength;
-    //vec2 distortion2 = (texture2D(dudvMap, vec2(-texCoords.x + waveTime, texCoords.y + waveTime)).rg * 2.0 - 1.0) * waveStrength;
-    //vec2 totalDistortion = distortion1 + distortion2;
-
     vec2 distortedTexCoords = texture2D(dudvMap, vec2(texCoords.x + waveTime, texCoords.y)).rg * 0.1;
     distortedTexCoords = texCoords + vec2(distortedTexCoords.x, distortedTexCoords.y + waveTime);
     vec2 totalDistortion = (texture2D(dudvMap, distortedTexCoords).rg * 2.0 - 1.0) * waveStrength;
@@ -44,7 +39,6 @@ void main()
 
     refractionTexCoords += totalDistortion;
     refractionTexCoords = clamp(refractionTexCoords, 0.001, 0.999);
-
 
     vec4 reflectColor = texture2D(reflectionTexture, reflectionTexCoords);
     vec4 refractColor = texture2D(refractionTexture, refractionTexCoords);

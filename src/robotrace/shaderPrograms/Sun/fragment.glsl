@@ -25,11 +25,21 @@ void main(void)
 
     vec4 shaft = vec4(0.0, 0.0, 0.0, 0.0);
 
-    if (length(TexCoord - sun) < 0.005) {
+    //if (length(TexCoord - sun) < 0.005) {
 
-    gl_FragColor = vec4(1,0,0,1);
+    //gl_FragColor = vec4(1,0,0,1);
 
-    } else {
+    //} else {
+
+    //for (int i = 0; i < SAMPLE_COUNT; i++) {
+    //    float weight = 1.0 - i * DECAY;
+    
+    //    shaft += texture2D(shaftTexture, TexCoord) * weight;
+    //    TexCoord += dir;
+    //}
+
+    //gl_FragColor = vec4(vec3(shaft * INV_SAMPLE_COUNT),0.6);
+    //}
 
     for (int i = 0; i < SAMPLE_COUNT; i++) {
         float weight = 1.0 - i * DECAY;
@@ -38,6 +48,5 @@ void main(void)
         TexCoord += dir;
     }
 
-    gl_FragColor = vec4(vec3(shaft * INV_SAMPLE_COUNT),0.75);
-    }
+        gl_FragColor = vec4(vec3(shaft * INV_SAMPLE_COUNT),0.6);
 }
