@@ -9,6 +9,8 @@ public class Water {
     
     Vector position;
     int side;
+    float time;
+    static final float SPEED = 0.001f;
     
     public Water (Vector position, int side) {
     
@@ -22,11 +24,17 @@ public class Water {
         int sideDiv2 = side / 2;
         
         gl.glBegin(GL2.GL_QUADS);
-        gl.glNormal3f(0,0,1);
-        gl.glTexCoord2i(1, 0); gl.glVertex3d(position.x() + sideDiv2, position.y() - sideDiv2, position.z());
-        gl.glTexCoord2i(0, 0); gl.glVertex3d(position.x() - sideDiv2, position.y() - sideDiv2, position.z());
-        gl.glTexCoord2i(0, 1); gl.glVertex3d(position.x() - sideDiv2, position.y() + sideDiv2, position.z());
-        gl.glTexCoord2i(1, 1); gl.glVertex3d(position.x() + sideDiv2, position.y() + sideDiv2, position.z());
+
+        gl.glTexCoord2i(0, 0);
+        gl.glNormal3d(0,0,1);
+        gl.glVertex3d(position.x() - sideDiv2, position.y() - sideDiv2, position.z());
+        gl.glTexCoord2i(1, 0);
+        gl.glVertex3d(position.x() + sideDiv2, position.y() - sideDiv2, position.z());
+        gl.glTexCoord2i(1, 1);
+        gl.glVertex3d(position.x() + sideDiv2, position.y() + sideDiv2, position.z());
+        gl.glTexCoord2i(0, 1);
+        gl.glVertex3d(position.x() - sideDiv2, position.y() + sideDiv2, position.z());     
+
         
         
 
@@ -36,6 +44,14 @@ public class Water {
     
     public float getHeight() {
         return (float)position.z();
+    }
+    
+    public float move() {
+        
+        time += SPEED;
+        time %= 1f;
+        
+        return time;
     }
 
 }

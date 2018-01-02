@@ -164,9 +164,9 @@ public class RobotRace extends Base {
         
         terrain = new Terrain(TerrainUtility.getSubdivisions(), TerrainUtility.getPatches());
         
-        sun = new Sun(new Vector(10000, 600, 10000));
+        sun = new Sun(new Vector(100000,0,0));
         
-        water = new Water(new Vector(0,0,15), 60);
+        water = new Water(new Vector(0,0,15), 150);
         
         waterFrameBuffers = new WaterFrameBuffers();
 
@@ -238,13 +238,15 @@ public class RobotRace extends Base {
         gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0.6f,0f,0f,1f}, 0);
         gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[]{1f,1f,1f,1f}, 0);
         
+        camera.update(gs, robots[0]);
+        
         // Update the view according to the camera mode and robot of interest.
         // For camera modes 1 to 4, determine which robot to focus on.
         glu.gluLookAt(camera.eye.x(),    camera.eye.y(),    camera.eye.z(),
                       camera.center.x(), camera.center.y(), camera.center.z(),
                       camera.up.x(),     camera.up.y(),     camera.up.z());
         
-        camera.update(gs, robots[0]);
+        
         gl.glGetFloatv(GL_MODELVIEW_MATRIX, viewM);
         
         
@@ -256,7 +258,7 @@ public class RobotRace extends Base {
     @Override
     public void drawScene() {
         
-        gl.glClearColor(0, 0, 0, 1);
+        gl.glClearColor(0.53f, 0.81f, 0.98f, 1);
         
         gl.glClear(GL_COLOR_BUFFER_BIT);
 
@@ -290,7 +292,7 @@ public class RobotRace extends Base {
 
         gl.glUseProgram(terrainShader.getProgramID());
         int clipPlane = gl.glGetUniformLocation(terrainShader.getProgramID(), "plane");
-        gl.glUniform4f(clipPlane, 0, 0, 1, -water.getHeight());
+        gl.glUniform4f(clipPlane, 0, 0, 1, -water.getHeight() + 0.35f);
         int sunPos = gl.glGetUniformLocation(terrainShader.getProgramID(), "sunPosition");
         gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());        
        
@@ -307,10 +309,9 @@ public class RobotRace extends Base {
         gl.glVertex3f(-18, 2, 3);
 
         gl.glEnd();
+        
         camera.invertPitch(gs, water);
         setView();
-
-        gl.glDisable(GL_CLIP_DISTANCE0);
         
         waterFrameBuffers.bindRefractionFrameBuffer(gl, gs);
         
@@ -322,22 +323,40 @@ public class RobotRace extends Base {
         terrain.draw(gl, glu, glut);
         
         waterFrameBuffers.unbindCurrentFBO(gl, gs);
-        
+        gl.glDisable(GL_CLIP_DISTANCE0);
         gl.glUseProgram(terrainShader.getProgramID());
         terrain.draw(gl, glu, glut);
 
-        
         gl.glUseProgram(waterShader.getProgramID());
+        gl.glMatrixMode(GL_MODELVIEW);
+        gl.glPushMatrix();
+        gl.glLoadIdentity();
         gl.glUniform3f(gl.glGetUniformLocation(waterShader.getProgramID(), "cameraPosition"), (float)camera.eye.x(), (float)camera.eye.y(), (float)camera.eye.z());
+        gl.glPopMatrix();
         int reflection = gl.glGetUniformLocation(waterShader.getProgramID(), "reflectionTexture");
         int refraction = gl.glGetUniformLocation(waterShader.getProgramID(), "refractionTexture");
-        
-        gl.glActiveTexture(GL_TEXTURE2);
-        gl.glBindTexture(GL_TEXTURE_2D, waterFrameBuffers.getReflectionTexture());
-        gl.glUniform1i(reflection, 2);
+        sunPos = gl.glGetUniformLocation(waterShader.getProgramID(), "sunPosition");
+        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
         gl.glActiveTexture(GL_TEXTURE1);
+        gl.glBindTexture(GL_TEXTURE_2D, waterFrameBuffers.getReflectionTexture());
+        gl.glUniform1i(reflection, 1);
+        gl.glActiveTexture(GL_TEXTURE2);
         gl.glBindTexture(GL_TEXTURE_2D, waterFrameBuffers.getRefractionTexture());
-        gl.glUniform1i(refraction, 1);
+        gl.glUniform1i(refraction, 2);
+        gl.glActiveTexture(GL_TEXTURE3);
+        int dudvMap = gl.glGetUniformLocation(waterShader.getProgramID(), "dudvMap");
+        gl.glUniform1i(dudvMap, 3);
+        Textures.dudv.bind(gl);
+        Textures.dudv.setTexParameteri(gl, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        Textures.dudv.setTexParameteri(gl, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        gl.glActiveTexture(GL_TEXTURE4);
+        int normalMap = gl.glGetUniformLocation(waterShader.getProgramID(), "normalMap");
+        gl.glUniform1i(normalMap, 4);
+        Textures.normal.bind(gl);
+        Textures.normal.setTexParameteri(gl, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        Textures.normal.setTexParameteri(gl, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        int waveTime = gl.glGetUniformLocation(waterShader.getProgramID(), "waveTime");
+        gl.glUniform1f(waveTime, water.move());
         
         water.draw(gl, glu, glut);
 
