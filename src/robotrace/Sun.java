@@ -27,17 +27,19 @@ public class Sun {
     }
     
     void move() {
-        time+=0.006f;
-        position.x = 50 * Math.cos(time);
-        position.y = 50 * Math.sin(time);
-        position.z = 20;
+        time+=0.04f;
+        position.x = 1000 * Math.cos(time);
+        position.y = 1000 * Math.sin(time);
+        position.z = 50;
     }
     
     public void draw(GL2 gl, GLU glu, GLUT glut) {
         gl.glPushMatrix();
         
         gl.glTranslatef((float)position.x(), (float)position.y(), (float)position.z());
+        gl.glRotatef(-23, 0, 1, 0);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, new float[] {(float)position.x(), (float)position.y(), (float)position.z()}, 0);
+        
         glut.glutSolidSphere(10,24,12);
         gl.glPopMatrix();
     }

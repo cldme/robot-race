@@ -8,7 +8,7 @@ import java.nio.FloatBuffer;
 class Camera {
 
     /** The position of the camera. */
-    public Vector eye = new Vector(0f, 0f, 0f);
+    public Vector eye = new Vector(0f, 0f, 1f);
 
     /** The point to which the camera is looking. */
     public Vector center = new Vector(0,0,0);
@@ -61,5 +61,10 @@ class Camera {
         
         gs.cnt.z -= 2d * ((float)gs.cnt.z() - water.getHeight());
         gs.phi *= -1;
+    }
+    
+    public Vector getPosition () {
+    
+        return eye;
     }
 }

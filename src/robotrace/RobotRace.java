@@ -164,9 +164,9 @@ public class RobotRace extends Base {
         
         terrain = new Terrain(TerrainUtility.getSubdivisions(), TerrainUtility.getPatches());
         
-        sun = new Sun(new Vector(0, 0, 100));
+        sun = new Sun(new Vector(10000, 600, 10000));
         
-        water = new Water(new Vector(-20,0,-1.3f), 20);
+        water = new Water(new Vector(0,0,15), 60);
         
         waterFrameBuffers = new WaterFrameBuffers();
 
@@ -246,6 +246,8 @@ public class RobotRace extends Base {
         
         camera.update(gs, robots[0]);
         gl.glGetFloatv(GL_MODELVIEW_MATRIX, viewM);
+        
+        
     }
     
     /**
@@ -290,19 +292,21 @@ public class RobotRace extends Base {
         int clipPlane = gl.glGetUniformLocation(terrainShader.getProgramID(), "plane");
         gl.glUniform4f(clipPlane, 0, 0, 1, -water.getHeight());
         int sunPos = gl.glGetUniformLocation(terrainShader.getProgramID(), "sunPosition");
-        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
-        int cameraPos = gl.glGetUniformLocation(terrainShader.getProgramID(), "cameraPosition");
-        gl.glUniform3f(cameraPos, (float)camera.eye.x(), (float)camera.eye.y(), (float)camera.eye.z());
-        
-//        if (!test) {
-//        camera.invertPitch(gs, water);
-//        test = true;
-//        }
+        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());        
        
         camera.invertPitch(gs, water);
         setView();
         terrain.draw(gl, glu, glut);
+        gl.glUseProgram(defaultShader.getProgramID());
+        gl.glColor3f(1,1,1);
+        gl.glBegin(GL_QUADS);
         
+        gl.glVertex3f(-18, -2, 3);
+        gl.glVertex3f(-22, -2, 3);
+        gl.glVertex3f(-22, 2, 3);
+        gl.glVertex3f(-18, 2, 3);
+
+        gl.glEnd();
         camera.invertPitch(gs, water);
         setView();
 
@@ -312,8 +316,7 @@ public class RobotRace extends Base {
         
         gl.glUseProgram(terrainShader.getProgramID());
         clipPlane = gl.glGetUniformLocation(terrainShader.getProgramID(), "plane");
-        gl.glUniform4f(clipPlane, 0, 0, -1, -water.getHeight());
-        sunPos = gl.glGetUniformLocation(terrainShader.getProgramID(), "sunPosition");
+        gl.glUniform4f(clipPlane, 0, 0, -1, water.getHeight());
         gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
         
         terrain.draw(gl, glu, glut);
@@ -322,11 +325,13 @@ public class RobotRace extends Base {
         
         gl.glUseProgram(terrainShader.getProgramID());
         terrain.draw(gl, glu, glut);
+
         
         gl.glUseProgram(waterShader.getProgramID());
-        
+        gl.glUniform3f(gl.glGetUniformLocation(waterShader.getProgramID(), "cameraPosition"), (float)camera.eye.x(), (float)camera.eye.y(), (float)camera.eye.z());
         int reflection = gl.glGetUniformLocation(waterShader.getProgramID(), "reflectionTexture");
         int refraction = gl.glGetUniformLocation(waterShader.getProgramID(), "refractionTexture");
+        
         gl.glActiveTexture(GL_TEXTURE2);
         gl.glBindTexture(GL_TEXTURE_2D, waterFrameBuffers.getReflectionTexture());
         gl.glUniform1i(reflection, 2);
@@ -335,7 +340,6 @@ public class RobotRace extends Base {
         gl.glUniform1i(refraction, 1);
         
         water.draw(gl, glu, glut);
-        
 
         
 //        gl.glMatrixMode (GL_MODELVIEW);
@@ -393,11 +397,11 @@ public class RobotRace extends Base {
         //=========================================RENDER SCENE=================================================
         
         
-//        gl.glActiveTexture(GL_TEXTURE0);
-//        gl.glUseProgram(trackShader.getProgramID());
-//        int texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
-//        gl.glUniform1i(texSampler, 0);
-//        raceTracks[gs.trackNr].draw(gl, glu, glut);
+        gl.glActiveTexture(GL_TEXTURE0);
+        gl.glUseProgram(trackShader.getProgramID());
+        int texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
+        gl.glUniform1i(texSampler, 0);
+        raceTracks[gs.trackNr].draw(gl, glu, glut);
 //
 //        gl.glUseProgram(terrainShader.getProgramID());
 //        int sunPos = gl.glGetUniformLocation(trackShader.getProgramID(), "sunPosition");
