@@ -388,6 +388,13 @@ public class RobotRace extends Base {
         gl.glUniform1f(waveTime, water.move());
         
         water.draw(gl, glu, glut);
+        
+        //=========================================DRAWING THE ROBOTS (EVERYTHING IN HERE)=================================================
+        
+        gl.glUseProgram(robotShader.getProgramID());
+        gl.glActiveTexture(GL_TEXTURE1);
+        Textures.head.bind(gl); // <------ Not working: I think there is a clash somewhere in the Robot class
+        robots[0].draw(gl, glu, glut, 0);
 
         //=========================================SUN POST PROCESS=================================================
 

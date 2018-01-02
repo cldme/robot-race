@@ -184,8 +184,8 @@ class Head extends BodyPart {
         gl.glPushMatrix();
         
         // Enable and bind texture
-        texture.enable(gl);
-        texture.bind(gl);
+//        texture.enable(gl);
+//        texture.bind(gl);
         
         // Translate head to correct position
         gl.glTranslated(0, 0, this.length + 7f);
