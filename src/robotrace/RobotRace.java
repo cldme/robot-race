@@ -95,18 +95,6 @@ public class RobotRace extends Base {
         // Create a new array of four robots
         robots = new Robot[4];
         
-        // Initialize robot 0
-        robots[0] = new Robot(Material.GOLD, Material.GOLD, torso, head);
-        
-//        // Initialize robot 1
-//        robots[1] = new Robot(Material.SILVER, Material.SILVER, torso, head);
-//        
-//        // Initialize robot 2
-//        robots[2] = new Robot(Material.WOOD, Material.WOOD, torso, head);
-//
-//        // Initialize robot 3
-//        robots[3] = new Robot(Material.ORANGE, Material.ORANGE, torso, head);
-        
         // Initialize the camera
         camera = new Camera();
         
@@ -207,6 +195,18 @@ public class RobotRace extends Base {
         // Try to load and set up shader programs
         ShaderPrograms.setupShaders(gl, glu);
         reportError("shaderProgram");
+        
+        // Initialize robot 0
+        robots[0] = new Robot(Material.GOLD, Material.GOLD, torso, head);
+        
+        // Initialize robot 1
+        robots[1] = new Robot(Material.SILVER, Material.SILVER, torso, head);
+        
+        // Initialize robot 2
+        robots[2] = new Robot(Material.WOOD, Material.WOOD, torso, head);
+
+        // Initialize robot 3
+        robots[3] = new Robot(Material.ORANGE, Material.ORANGE, torso, head);
 
     }
    
@@ -392,8 +392,8 @@ public class RobotRace extends Base {
         //=========================================DRAWING THE ROBOTS (EVERYTHING IN HERE)=================================================
         
         gl.glUseProgram(robotShader.getProgramID());
-        gl.glActiveTexture(GL_TEXTURE1);
-        Textures.head.bind(gl); // <------ Not working: I think there is a clash somewhere in the Robot class
+        gl.glActiveTexture(GL_TEXTURE0);
+        Textures.head.bind(gl);
         robots[0].draw(gl, glu, glut, 0);
 
         //=========================================SUN POST PROCESS=================================================
