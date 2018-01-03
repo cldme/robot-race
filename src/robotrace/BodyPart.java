@@ -458,7 +458,6 @@ class Leg extends BodyPart {
             this.step = this.step * -1;
         }
 
-        // Push me, and then just touch me, till I can't get my..satisfaction
         gl.glPushMatrix();
 
         //Set accent color
@@ -467,7 +466,6 @@ class Leg extends BodyPart {
         //Translate legs for correct position to body
         gl.glTranslated((this.width * .2) * this.side, 0, this.limbRadius);
 
-        // Push me, and then just touch me, till I can't get my..satisfaction
         gl.glPushMatrix();
 
         //Draw rotated leg

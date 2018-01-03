@@ -73,6 +73,18 @@ public class RobotRace extends Base {
     /** Instance of the terrain. */
     private final Terrain terrain;
     
+    // Variables for tracking time spent on track
+    private double time;
+    // Variable oldTime is used to calculate time from last tick
+    private double oldTime;
+    
+    // Array for tracking number of steps done by robots
+    private Double[] steps = {0.0, 0.0, 0.0, 0.0};
+    // Array for storing robots speed
+    private Double[] speed = {150.0, 150.0, 150.0, 150.0};
+    // Total number of steps taken by the robots in one lap (can be tweaked)
+    private Double N = 10000d;
+    
     private final Sun sun;
     
     private final Water water;
@@ -391,10 +403,62 @@ public class RobotRace extends Base {
         
         //=========================================DRAWING THE ROBOTS (EVERYTHING IN HERE)=================================================
         
-        gl.glUseProgram(robotShader.getProgramID());
-        gl.glActiveTexture(GL_TEXTURE0);
-        Textures.head.bind(gl);
-        robots[0].draw(gl, glu, glut, 0);
+        // -------------------- UNDER CONSTRUCTION --------------------
+        
+        // Update time variables
+        oldTime = time;
+        time = gs.tAnim;
+                
+        // Calculate the positions of the robots on the track
+        for (int i = 0; i < 4; i++) {
+            robots[i].position = raceTracks[gs.trackNr].getLanePoint(i, (steps[i]) / N);
+            robots[i].direction = raceTracks[gs.trackNr].getLaneTangent(i, steps[i] / N);
+            //System.out.println(raceTracks[gs.trackNr].getLanePoint(i, steps[i]/N).x);
+            
+            steps[i] += (time - oldTime) * speed[i];
+            
+            if(round(steps[i]/speed[i], 1) % round((N/speed[i]), 1) == 0) {
+                steps[i] = 0.0;
+            }
+        }
+        
+        // Start drawing the robots in the scene
+        gl.glPushMatrix();
+        
+        for (int i = 0; i < 4; i++) {
+            gl.glPushMatrix();
+            gl.glTranslated(robots[i].position.x, robots[i].position.y, robots[i].position.z);
+            gl.glRotated(90, 0, 0, 1);
+            //double angle = Math.atan2(robots[i].direction.y, robots[i].direction.x);
+
+            // Calculate the dot product between the tangent and the Y axis.
+            double dot = robots[i].direction.dot(Vector.Y);
+
+            //Divide by length of y-axis and direction to get cos
+            double cosangle = dot / (robots[i].direction.length() * Vector.Y.length());
+
+            //Check if x is negative of possitive     
+            double angle;
+            if (robots[i].direction.x() >= 0) {
+                angle = -Math.acos(cosangle);
+            } else {
+                angle = Math.acos(cosangle);
+            }
+            gl.glRotated(Math.toDegrees(angle), 0, 0, 1);
+
+            // Rotate bender to stand perpendicular to lange tangent
+            gl.glUseProgram(robotShader.getProgramID());
+            gl.glActiveTexture(GL_TEXTURE0);
+            Textures.head.bind(gl);
+            //robots[0].draw(gl, glu, glut, 0);
+            robots[i].draw(gl, glu, glut, gs.tAnim);
+            
+            gl.glPopMatrix();
+        }
+        
+        gl.glPopMatrix();
+        
+        // -------------------- UNDER CONSTRUCTION --------------------
 
         //=========================================SUN POST PROCESS=================================================
 
@@ -572,6 +636,10 @@ public class RobotRace extends Base {
         glut.glutSolidCube(1);
     }
     
+    private static double round(double value, int precision) {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
+    }
     
     /**
      * Main program execution body, delegates to an instance of

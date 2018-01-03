@@ -102,8 +102,7 @@ class Robot {
         gl.glPushMatrix();
         
         // Translate robot to the correct position in the XOY plane
-        // gl.glTranslated(position.x(), position.y(), position.z());
-        gl.glTranslated(10f, 0f, 10f);
+        gl.glTranslated(0, 0, 0.4f);
         // Apply the universal scaling for the robot
         gl.glScaled(scale, scale, scale);
 
