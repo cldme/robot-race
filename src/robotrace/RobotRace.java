@@ -210,6 +210,18 @@ public class RobotRace extends Base {
         // Try to load and set up shader programs
         ShaderPrograms.setupShaders(gl, glu);
         reportError("shaderProgram");
+        
+        // Initialize robot 0
+        robots[0] = new Robot(Material.GOLD, Material.GOLD, torso, head);
+        
+        // Initialize robot 1
+        robots[1] = new Robot(Material.SILVER, Material.SILVER, torso, head);
+        
+        // Initialize robot 2
+        robots[2] = new Robot(Material.WOOD, Material.WOOD, torso, head);
+
+        // Initialize robot 3
+        robots[3] = new Robot(Material.ORANGE, Material.ORANGE, torso, head);
 
         // Initialize robot 0
         robots[0] = new Robot(Material.GOLD, Material.GOLD, torso, head);
