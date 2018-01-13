@@ -16,6 +16,7 @@ public class ShaderPrograms {
     public static ShaderProgram terrainShader;
     public static ShaderProgram blackShader;
     public static ShaderProgram sunShader;
+    public static ShaderProgram moonShader;
     public static ShaderProgram waterShader;
     public static ShaderProgram postProcessShader;
     
@@ -25,7 +26,8 @@ public class ShaderPrograms {
         trackShader = new ShaderProgram(gl, glu, "shaderPrograms/Track/vertex.glsl", null, "shaderPrograms/Track/fragment.glsl");
         terrainShader = new ShaderProgram(gl, glu, "shaderPrograms/Terrain/vertex.glsl", null, "shaderPrograms/Terrain/fragment.glsl");
         blackShader = new ShaderProgram(gl, glu, "shaderPrograms/Black/vertex.glsl", null, "shaderPrograms/Black/fragment.glsl");
-        sunShader = new ShaderProgram(gl, glu, "shaderPrograms/Sun/vertex.glsl", null, "shaderPrograms/Sun/fragment.glsl");
+        sunShader = new ShaderProgram(gl, glu, "shaderPrograms/CelestialBodies/sunVertex.glsl", null, "shaderPrograms/CelestialBodies/sunFragment.glsl");
+        moonShader = new ShaderProgram(gl, glu, "shaderPrograms/CelestialBodies/moonVertex.glsl", null, "shaderPrograms/CelestialBodies/moonFragment.glsl");
         waterShader = new ShaderProgram(gl, glu, "shaderPrograms/Water/vertex.glsl", null, "shaderPrograms/Water/fragment.glsl");
         postProcessShader = new ShaderProgram(gl, glu, "shaderPrograms/PostProcess/vertex.glsl", null, "shaderPrograms/PostProcess/fragment.glsl");
     }

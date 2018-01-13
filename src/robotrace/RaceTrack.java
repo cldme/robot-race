@@ -53,6 +53,7 @@ abstract class RaceTrack {
 //        
 //        
 //        gl.glEnd();
+
         Textures.track.bind(gl);
         Textures.track.setTexParameteri(gl, GL_TEXTURE_WRAP_T, GL_REPEAT);
         drawTop(gl);
@@ -64,6 +65,8 @@ abstract class RaceTrack {
         drawOuter(gl);
         drawInner(gl);
         drawBottom(gl);
+
+        //drawBezier(gl);
     }
     void drawBezier(GL2 gl) {
     
@@ -76,6 +79,8 @@ abstract class RaceTrack {
             gl.glVertex3d(point.x,point.y,point.z);
                     
         }
+        
+    gl.glEnd();
     
     gl.glBegin(GL_LINES);
     
@@ -93,9 +98,28 @@ abstract class RaceTrack {
 
     }
     
+    
+    void drawNormals (GL2 gl) {
+    
+        gl.glBegin(GL_LINES);
+        
+        for (int points = 0; points <= 400; points++) {
+                
+            Vector point = getPoint(points/400d);
+            Vector normal = getTangent(points/400d).cross(new Vector (0f,0f,1f)).normalized();
+            
+            gl.glVertex3d(point.x,point.y,point.z);
+            gl.glVertex3d(point.x+normal.x,point.y+normal.y,point.z+normal.z);
+                    
+        }
+        gl.glEnd();
+    
+    }
+    
     void drawTopQuad (GL2 gl) {
         gl.glBegin(GL_QUADS);
             for (int i = -2; i < 2; i++) {
+                
                 
                 for (int points = 0; points < resolution; points++) {
                 

@@ -67,7 +67,6 @@ public abstract class BodyPart {
      * @param dispZ The displacement on the Z-axis
      */
     public void SolidCube(float dim, float dispZ) {
-        gl.glPushMatrix();
         gl.glBegin(GL2.GL_QUADS);
         
         // Front Face (up)
@@ -107,7 +106,6 @@ public abstract class BodyPart {
         gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-dim, dim, -dim - dispZ);
         
         gl.glEnd();
-        gl.glPopMatrix();
     }
     
     /**
@@ -189,9 +187,11 @@ class Head extends BodyPart {
         
         // Translate head to correct position
         gl.glTranslated(0, 0, this.length + 7f);
+        // Rotate head to match texture orientation
+        gl.glRotated(90, 1, 0, 0);
         
         // -------------------- DRAW ROBOT HEAD (textured cube) ----------
-        this.SolidCube(3, 0);
+        this.SolidCube(3f, 0);
         // -------------------- DRAW ROBOT HEAD (textured cube) ----------
         
         
@@ -458,7 +458,6 @@ class Leg extends BodyPart {
             this.step = this.step * -1;
         }
 
-        // Push me, and then just touch me, till I can't get my..satisfaction
         gl.glPushMatrix();
 
         //Set accent color
@@ -467,7 +466,6 @@ class Leg extends BodyPart {
         //Translate legs for correct position to body
         gl.glTranslated((this.width * .2) * this.side, 0, this.limbRadius);
 
-        // Push me, and then just touch me, till I can't get my..satisfaction
         gl.glPushMatrix();
 
         //Draw rotated leg

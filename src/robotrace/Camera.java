@@ -40,10 +40,14 @@ class Camera {
      */
     private void setDefaultMode(GlobalState gs) {
         center = gs.cnt;
+//        if (gs.vDist > 60)
+//            gs.vDist = 60;
+//        center.x = center.x > 0 ? Math.min(center.x, 50) : Math.max(center.x, -50);
+//        center.y = center.y > 0 ? Math.min(center.y, 50) : Math.max(center.y, -50);
+//        center.z = center.z > 0 ? Math.min(center.z, 20) : Math.max(center.z, -20);
         eye.x = gs.vDist * Math.cos(gs.phi) * Math.cos(gs.theta) + gs.cnt.x;
         eye.y = gs.vDist * Math.cos(gs.phi) * Math.sin(gs.theta) + gs.cnt.y;
-        eye.z = gs.vDist * Math.sin(gs.phi) + gs.cnt.z;
-        
+        eye.z = gs.vDist * Math.sin(gs.phi) + gs.cnt.z;        
     }
 
     /**
@@ -52,7 +56,7 @@ class Camera {
      */
     private void setFirstPersonMode(GlobalState gs, Robot robot) {
 
-
+    
 
     }
 

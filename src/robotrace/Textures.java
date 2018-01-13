@@ -17,6 +17,7 @@ public class Textures {
     public static Texture brick = null;
     public static Texture normal = null;
     public static Texture dudv = null;
+    public static Texture moon = null;
         
     public static void loadTextures() {
         head = loadTexture("textures/head.jpg");
@@ -25,6 +26,7 @@ public class Textures {
         brick = loadTexture("textures/brick.jpg");
         normal = loadTexture("textures/normalMap.png");
         dudv = loadTexture("textures/dudvMap.png");
+        moon = loadTexture("textures/moon.png");
     }
     
     /**

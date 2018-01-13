@@ -1,10 +1,6 @@
 package robotrace;
 
 import java.awt.Color;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.ByteOrder;
-import java.util.Arrays;
 
 public final class TerrainUtility {
     
@@ -14,8 +10,8 @@ public final class TerrainUtility {
     private final static double S_C = 100d /(double)(P * 3);
     private final static double C = 50d; // used for corner reference
     private final static double S_V = 1d / SUBDIVISIONS;
-    private final static double spread = 1.5f;
-    private final static double halfSpread = spread / 2d;
+    private final static double SPREAD = 1.5f;
+    private final static double HALFSPREAD = SPREAD / 2d;
     private final static Color[] colors = 
             
             new Color[] {
@@ -31,21 +27,21 @@ public final class TerrainUtility {
     private final static Vector[][] bezierSurfaces =
             new Vector[][] {
                 
-                {   new Vector(-C          , C,           8),
+                {   new Vector(-C          , C,           0),
                     new Vector(-C +     S_C, C,           0),
-                    new Vector(-C + 2 * S_C, C,           60),
+                    new Vector(-C + 2 * S_C, C,           0),
                     new Vector(-C + 3 * S_C, C,           0),
-                    new Vector(-C          , C -     S_C, 56),
-                    new Vector(-C +     S_C, C -     S_C, 50),
+                    new Vector(-C          , C -     S_C, 0),
+                    new Vector(-C +     S_C, C -     S_C, 0),
                     new Vector(-C + 2 * S_C, C -     S_C, 0),
                     new Vector(-C + 3 * S_C, C -     S_C, 0),
-                    new Vector(-C          , C - 2 * S_C, 35),
-                    new Vector(-C +     S_C, C - 2 * S_C, 46),
-                    new Vector(-C + 2 * S_C, C - 2 * S_C, 24),
+                    new Vector(-C          , C - 2 * S_C, 0),
+                    new Vector(-C +     S_C, C - 2 * S_C, 0),
+                    new Vector(-C + 2 * S_C, C - 2 * S_C, 0),
                     new Vector(-C + 3 * S_C, C - 2 * S_C, 0),
                     new Vector(-C          , C - 3 * S_C, 0),
-                    new Vector(-C +     S_C, C - 3 * S_C, 29),
-                    new Vector(-C + 2 * S_C, C - 3 * S_C, 23),
+                    new Vector(-C +     S_C, C - 3 * S_C, 0),
+                    new Vector(-C + 2 * S_C, C - 3 * S_C, 0),
                     new Vector(-C + 3 * S_C, C - 3 * S_C, 0)  }
                     ,
                 {   new Vector(-C           + PS, C          , 0),
@@ -117,12 +113,12 @@ public final class TerrainUtility {
                     new Vector(-C + 3 * S_C +(4 % P) * PS, C - 3 * S_C - (4 / P) * PS, 0)  }
                     ,
                 {   new Vector(-C           +(5 % P) * PS, C -           (5 / P) * PS, 0),
-                    new Vector(-C +     S_C +(5 % P) * PS, C -           (5 / P) * PS, 29),
-                    new Vector(-C + 2 * S_C +(5 % P) * PS, C -           (5 / P) * PS, 23),
+                    new Vector(-C +     S_C +(5 % P) * PS, C -           (5 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(5 % P) * PS, C -           (5 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(5 % P) * PS, C -           (5 / P) * PS, 0),
                     new Vector(-C           +(5 % P) * PS, C -     S_C - (5 / P) * PS, 0),
-                    new Vector(-C +     S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 58),
-                    new Vector(-C + 2 * S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 34),
+                    new Vector(-C +     S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(5 % P) * PS, C -     S_C - (5 / P) * PS, 0),
                     new Vector(-C           +(5 % P) * PS, C - 2 * S_C - (5 / P) * PS, 0),
                     new Vector(-C +     S_C +(5 % P) * PS, C - 2 * S_C - (5 / P) * PS, 0),
@@ -135,7 +131,7 @@ public final class TerrainUtility {
                     ,
                 {   new Vector(-C           +(6 % P) * PS, C -           (6 / P) * PS, 0),
                     new Vector(-C +     S_C +(6 % P) * PS, C -           (6 / P) * PS, 0),
-                    new Vector(-C + 2 * S_C +(6 % P) * PS, C -           (6 / P) * PS, 40),
+                    new Vector(-C + 2 * S_C +(6 % P) * PS, C -           (6 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(6 % P) * PS, C -           (6 / P) * PS, 0),
                     new Vector(-C           +(6 % P) * PS, C -     S_C - (6 / P) * PS, 0),
                     new Vector(-C +     S_C +(6 % P) * PS, C -     S_C - (6 / P) * PS, 0),
@@ -223,12 +219,12 @@ public final class TerrainUtility {
                     new Vector(-C + 2 * S_C +(11 % P) * PS, C -           (11 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(11 % P) * PS, C -           (11 / P) * PS, 0),
                     new Vector(-C           +(11 % P) * PS, C -     S_C - (11 / P) * PS, 0),
-                    new Vector(-C +     S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, -10),
-                    new Vector(-C + 2 * S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, -10),
+                    new Vector(-C +     S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(11 % P) * PS, C -     S_C - (11 / P) * PS, 0),
                     new Vector(-C           +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, 0),
-                    new Vector(-C +     S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, -10),
-                    new Vector(-C + 2 * S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, -10),
+                    new Vector(-C +     S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, 0),
+                    new Vector(-C + 2 * S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(11 % P) * PS, C - 2 * S_C - (11 / P) * PS, 0),
                     new Vector(-C           +(11 % P) * PS, C - 3 * S_C - (11 / P) * PS, 0),
                     new Vector(-C +     S_C +(11 % P) * PS, C - 3 * S_C - (11 / P) * PS, 0),
@@ -280,11 +276,11 @@ public final class TerrainUtility {
                     new Vector(-C           +(14 % P) * PS, C - 2 * S_C - (14 / P) * PS, 0),
                     new Vector(-C +     S_C +(14 % P) * PS, C - 2 * S_C - (14 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(14 % P) * PS, C - 2 * S_C - (14 / P) * PS, 0),
-                    new Vector(-C + 3 * S_C +(14 % P) * PS, C - 2 * S_C - (14 / P) * PS, 30),
+                    new Vector(-C + 3 * S_C +(14 % P) * PS, C - 2 * S_C - (14 / P) * PS, 0),
                     new Vector(-C           +(14 % P) * PS, C - 3 * S_C - (14 / P) * PS, 0),
                     new Vector(-C +     S_C +(14 % P) * PS, C - 3 * S_C - (14 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(14 % P) * PS, C - 3 * S_C - (14 / P) * PS, 0),
-                    new Vector(-C + 3 * S_C +(14 % P) * PS, C - 3 * S_C - (14 / P) * PS, 30)  }
+                    new Vector(-C + 3 * S_C +(14 % P) * PS, C - 3 * S_C - (14 / P) * PS, 0)  }
                     ,
                 {   new Vector(-C           +(15 % P) * PS, C -           (15 / P) * PS, 0),
                     new Vector(-C +     S_C +(15 % P) * PS, C -           (15 / P) * PS, 0),
@@ -294,11 +290,11 @@ public final class TerrainUtility {
                     new Vector(-C +     S_C +(15 % P) * PS, C -     S_C - (15 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(15 % P) * PS, C -     S_C - (15 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(15 % P) * PS, C -     S_C - (15 / P) * PS, 0),
-                    new Vector(-C           +(15 % P) * PS, C - 2 * S_C - (15 / P) * PS, 30),
+                    new Vector(-C           +(15 % P) * PS, C - 2 * S_C - (15 / P) * PS, 0),
                     new Vector(-C +     S_C +(15 % P) * PS, C - 2 * S_C - (15 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(15 % P) * PS, C - 2 * S_C - (15 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(15 % P) * PS, C - 2 * S_C - (15 / P) * PS, 0),
-                    new Vector(-C           +(15 % P) * PS, C - 3 * S_C - (15 / P) * PS, 30),
+                    new Vector(-C           +(15 % P) * PS, C - 3 * S_C - (15 / P) * PS, 0),
                     new Vector(-C +     S_C +(15 % P) * PS, C - 3 * S_C - (15 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(15 % P) * PS, C - 3 * S_C - (15 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(15 % P) * PS, C - 3 * S_C - (15 / P) * PS, 0)  }
@@ -325,11 +321,11 @@ public final class TerrainUtility {
                     new Vector(-C + 2 * S_C +(17 % P) * PS, C -           (17 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(17 % P) * PS, C -           (17 / P) * PS, 0),
                     new Vector(-C           +(17 % P) * PS, C -     S_C - (17 / P) * PS, 0),
-                    new Vector(-C +     S_C +(17 % P) * PS, C -     S_C - (17 / P) * PS, 0),
+                    new Vector(-C +     S_C +(17 % P) * PS, C -     S_C - (17 / P) * PS, 50),
                     new Vector(-C + 2 * S_C +(17 % P) * PS, C -     S_C - (17 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(17 % P) * PS, C -     S_C - (17 / P) * PS, 0),
                     new Vector(-C           +(17 % P) * PS, C - 2 * S_C - (17 / P) * PS, 0),
-                    new Vector(-C +     S_C +(17 % P) * PS, C - 2 * S_C - (17 / P) * PS, 0),
+                    new Vector(-C +     S_C +(17 % P) * PS, C - 2 * S_C - (17 / P) * PS, 75),
                     new Vector(-C + 2 * S_C +(17 % P) * PS, C - 2 * S_C - (17 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(17 % P) * PS, C - 2 * S_C - (17 / P) * PS, 0),
                     new Vector(-C           +(17 % P) * PS, C - 3 * S_C - (17 / P) * PS, 0),
@@ -374,7 +370,7 @@ public final class TerrainUtility {
                 {   new Vector(-C           +(20 % P) * PS, C -           (20 / P) * PS, 0),
                     new Vector(-C +     S_C +(20 % P) * PS, C -           (20 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(20 % P) * PS, C -           (20 / P) * PS, 0),
-                    new Vector(-C + 3 * S_C +(20 % P) * PS, C -           (20 / P) * PS, 30),
+                    new Vector(-C + 3 * S_C +(20 % P) * PS, C -           (20 / P) * PS, 0),
                     new Vector(-C           +(20 % P) * PS, C -     S_C - (20 / P) * PS, 0),
                     new Vector(-C +     S_C +(20 % P) * PS, C -     S_C - (20 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(20 % P) * PS, C -     S_C - (20 / P) * PS, 0),
@@ -388,7 +384,7 @@ public final class TerrainUtility {
                     new Vector(-C + 2 * S_C +(20 % P) * PS, C - 3 * S_C - (20 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(20 % P) * PS, C - 3 * S_C - (20 / P) * PS, 0)  }
                     ,
-                {   new Vector(-C           +(21 % P) * PS, C -           (21 / P) * PS, 30),
+                {   new Vector(-C           +(21 % P) * PS, C -           (21 / P) * PS, 0),
                     new Vector(-C +     S_C +(21 % P) * PS, C -           (21 / P) * PS, 0),
                     new Vector(-C + 2 * S_C +(21 % P) * PS, C -           (21 / P) * PS, 0),
                     new Vector(-C + 3 * S_C +(21 % P) * PS, C -           (21 / P) * PS, 0),
@@ -708,15 +704,6 @@ public final class TerrainUtility {
         return heights;
     }
     
-//    public static Vector[] generateNormals () {
-//    
-//    
-//    
-//    
-//    
-//    
-//    }
-    
     public static int getPatchUV (double u, double v) {
         if (u >= P)
             u = P-1;
@@ -771,7 +758,7 @@ public final class TerrainUtility {
     
     private static Color calculateColor(double height, float amplitude) {
             double value = (height + amplitude) / (amplitude * 2);
-            value = Clamp009999((value - halfSpread) * (1d / spread));
+            value = Clamp009999((value - HALFSPREAD) * (1d / SPREAD));
             int firstBiome = (int) Math.floor(value / part);
             double blend = (value - (firstBiome * part)) / part;
         return Interpolate(colors[firstBiome], colors[firstBiome + 1], blend);

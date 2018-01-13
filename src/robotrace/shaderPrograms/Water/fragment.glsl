@@ -9,10 +9,10 @@ varying vec3 toCameraVector;
 varying vec4 clipSpace;
 varying vec3 fromLightVector;
 
-const float tiling = 10.0;
-const float waveStrength = 0.015;
+const float tiling = 100.0;
+const float waveStrength = 0.015;//0.015;
 
-const float shineDamper = 100.0;
+const float shineDamper = 200.0;
 const float reflectivity = 2;
 
 void main()
@@ -44,10 +44,10 @@ void main()
     vec4 refractColor = texture2D(refractionTexture, refractionTexCoords);
 
     vec4 normalMapColor = texture2D(normalMap, distortedTexCoords);
-    vec3 normal = vec3(normalMapColor.r * 2.0 - 1.0, normalMapColor.b, normalMapColor.g * 2.0 - 1.0);
+    vec3 normal = vec3(normalMapColor.r * 2.0 - 1.0, normalMapColor.g * 2.0 - 1.0, normalMapColor.b);
     normal = normalize(normal);
 
-    vec3 reflectedLight = reflect(normalize(-fromLightVector), normal);
+    vec3 reflectedLight = reflect(normalize(fromLightVector), normal);
     float specular = max(dot(reflectedLight, viewVector), 0.0);
     specular = pow(specular, shineDamper);
     vec3 specularHighlights = vec3(1,1,1) * specular * reflectivity;

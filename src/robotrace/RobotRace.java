@@ -5,6 +5,10 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import static robotrace.ShaderPrograms.*;
 import static robotrace.Textures.*;
+import java.util.concurrent.TimeUnit;
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Handles all of the RobotRace graphics functionality,
@@ -73,13 +77,27 @@ public class RobotRace extends Base {
     /** Instance of the terrain. */
     private final Terrain terrain;
     
-    private final Sun sun;
+    // Variables for tracking time spent on track
+    private double time;
+    // Variable oldTime is used to calculate time from last tick
+    private double oldTime;
+    
+    // Array for tracking number of steps done by robots
+    private Double[] steps = {0.0, 0.0, 0.0, 0.0};
+    // Array for storing robots speed
+    private Double[] speed = {150.0, 150.0, 150.0, 150.0};
+    // Total number of steps taken by the robots in one lap (can be tweaked)
+    private Double N = 10000d;
+    
+    private final CelestialBodies sun;
     
     private final Water water;
     
     private final WaterFrameBuffers waterFrameBuffers;
     
-    private final PostProcessing postProcessing;
+    private final DayNightCycle dayNightCycle;
+    
+    TimeManager timeManager = TimeManager.start();
     
     FloatBuffer viewM = FloatBuffer.allocate(16);
     FloatBuffer projM = FloatBuffer.allocate(16);
@@ -94,18 +112,6 @@ public class RobotRace extends Base {
         
         // Create a new array of four robots
         robots = new Robot[4];
-        
-        // Initialize robot 0
-        robots[0] = new Robot(Material.GOLD, Material.GOLD, torso, head);
-        
-//        // Initialize robot 1
-//        robots[1] = new Robot(Material.SILVER, Material.SILVER, torso, head);
-//        
-//        // Initialize robot 2
-//        robots[2] = new Robot(Material.WOOD, Material.WOOD, torso, head);
-//
-//        // Initialize robot 3
-//        robots[3] = new Robot(Material.ORANGE, Material.ORANGE, torso, head);
         
         // Initialize the camera
         camera = new Camera();
@@ -163,18 +169,15 @@ public class RobotRace extends Base {
             }              
         );
         
-        // Initialize the terrain
-        
         terrain = new Terrain(TerrainUtility.getSubdivisions(), TerrainUtility.getPatches());
         
-        sun = new Sun(new Vector(100,0,25));
+        sun = new CelestialBodies(new Vector(100,0,25), new Vector(100,0,25), 150);
         
         water = new Water(new Vector(0,0,0.5f), 150);
         
         waterFrameBuffers = new WaterFrameBuffers();
         
-        postProcessing = new PostProcessing();
-
+        dayNightCycle = new DayNightCycle(150);
     }
     
     /**
@@ -208,6 +211,17 @@ public class RobotRace extends Base {
         ShaderPrograms.setupShaders(gl, glu);
         reportError("shaderProgram");
 
+        // Initialize robot 0
+        robots[0] = new Robot(Material.GOLD, Material.GOLD, torso, head);
+        
+        // Initialize robot 1
+        robots[1] = new Robot(Material.SILVER, Material.SILVER, torso, head);
+        
+        // Initialize robot 2
+        robots[2] = new Robot(Material.WOOD, Material.WOOD, torso, head);
+
+        // Initialize robot 3
+        robots[3] = new Robot(Material.ORANGE, Material.ORANGE, torso, head);
     }
    
     /**
@@ -218,7 +232,7 @@ public class RobotRace extends Base {
         
         gl.glEnable(GL_LIGHTING);
         gl.glEnable(GL_LIGHT0);
-        
+        gl.glEnable(GL_LIGHT1);
         // Select part of window.
         gl.glViewport(0, 0, gs.w, gs.h);
         gl.glGetIntegerv(GL_VIEWPORT, viewP);
@@ -227,7 +241,7 @@ public class RobotRace extends Base {
         gl.glLoadIdentity();
         
         // Set the perspective.
-        glu.gluPerspective(45, (float)gs.w / (float)gs.h, 0.1*gs.vDist, 10*gs.vDist);
+        glu.gluPerspective(45, (float)gs.w / (float)gs.h, 0.1*gs.vDist, 100*gs.vDist);
         
         gl.glGetFloatv(GL_PROJECTION_MATRIX, projM);
 
@@ -236,12 +250,6 @@ public class RobotRace extends Base {
         gl.glMatrixMode(GL_MODELVIEW);
         
         gl.glLoadIdentity();
-        
-        //Add light source
-        gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] {(float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z(), 0f}, 0);
-        gl.glLightfv(GL_LIGHT0, GL_AMBIENT, new float[]{0.2f,0f,0.4f,1f}, 0);
-        gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[]{0.6f,0f,0f,1f}, 0);
-        gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[]{1f,1f,1f,1f}, 0);
         
         camera.update(gs, robots[0]);
         
@@ -253,8 +261,6 @@ public class RobotRace extends Base {
         
         
         gl.glGetFloatv(GL_MODELVIEW_MATRIX, viewM);
-        
-        
     }
     
     /**
@@ -262,17 +268,13 @@ public class RobotRace extends Base {
      */
     @Override
     public void drawScene() {
-        
-        gl.glClearColor(0.53f, 0.81f, 0.98f, 1);
-        
+
+        float dayTime = timeManager.time(TimeUnit.MILLISECONDS)/1000f;
+        gl.glClearColor(0,0,0,0);
         gl.glClear(GL_COLOR_BUFFER_BIT);
-
         gl.glClear(GL_DEPTH_BUFFER_BIT);
-
-        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);        
+        gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);        
 
         if (!waterFrameBuffers.isInitialized()) {
             waterFrameBuffers.init(gl, gs);
@@ -286,22 +288,16 @@ public class RobotRace extends Base {
         gl.glClear(GL_DEPTH_BUFFER_BIT);
         
         gl.glEnable(GL_CLIP_DISTANCE0);
-        
-        //sun.move();
 
-
-        
         camera.invertPitch(gs, water);
         setView();
         
         gl.glUseProgram(terrainShader.getProgramID());
         int clipPlane = gl.glGetUniformLocation(terrainShader.getProgramID(), "plane");
-        gl.glUniform4f(clipPlane, 0, 0, 1, -water.getHeight() + 0.35f);
+        gl.glUniform4f(clipPlane, 0, 0, 1, -water.getHeight());
         int sunPos = gl.glGetUniformLocation(terrainShader.getProgramID(), "sunPosition");
-        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());       
-        
+        gl.glUniform3f(sunPos, (float)sun.positionSun.x(), (float)sun.positionSun.y(), (float)sun.positionSun.z());               
         terrain.draw(gl, glu, glut);
-
         gl.glActiveTexture(GL_TEXTURE0);
         gl.glUseProgram(trackShader.getProgramID());
         int texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
@@ -309,12 +305,15 @@ public class RobotRace extends Base {
         raceTracks[gs.trackNr].draw(gl, glu, glut);
         gl.glUseProgram(defaultShader.getProgramID());
         gl.glColor3f(1,1,0.8f);
-        sun.draw(gl, glu, glut);
+        sun.moveSun(dayTime);
+        sun.moveMoon(dayTime);
+        sun.drawSun(gl, glu, glut);
+        sun.drawMoon(gl, glu, glut);
         camera.invertPitch(gs, water);
         setView();
 
-        
-        
+        gl.glUseProgram(defaultShader.getProgramID());
+        dayNightCycle.drawSky(gl, gs, dayTime);
         
         //=========================================WATER REFRACTION=================================================
         
@@ -327,7 +326,7 @@ public class RobotRace extends Base {
         gl.glUseProgram(terrainShader.getProgramID());
         clipPlane = gl.glGetUniformLocation(terrainShader.getProgramID(), "plane");
         gl.glUniform4f(clipPlane, 0, 0, -1, water.getHeight());
-        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
+        gl.glUniform3f(sunPos, (float)sun.positionSun.x(), (float)sun.positionSun.y(), (float)sun.positionSun.z());
         
         terrain.draw(gl, glu, glut);
         
@@ -341,31 +340,41 @@ public class RobotRace extends Base {
         waterFrameBuffers.unbindCurrentFBO(gl, gs);
         //=========================================SCENE=================================================
         
-//        if (!postProcessing.isInitialized()) {
-//            postProcessing.init(gl, gs);
-//            postProcessing.setInitialize();
-//        }
-        //postProcessing.bindPostProcessFBO(gl);
-        
         gl.glClear(GL_COLOR_BUFFER_BIT);
         gl.glClear(GL_DEPTH_BUFFER_BIT);
+        
+        sun.moveSun(dayTime);
+        sun.moveMoon(dayTime);
 
+        gl.glUseProgram(defaultShader.getProgramID());
+        
+        dayNightCycle.drawSky(gl, gs, dayTime);
+        
+        gl.glUseProgram(moonShader.getProgramID());
+        gl.glActiveTexture(GL_TEXTURE0);
+        int moonTex = gl.glGetUniformLocation(moonShader.getProgramID(), "moonTex");
+        gl.glUniform1i(moonTex, 0);
+        Textures.moon.bind(gl);
+        sun.drawMoonQuad(gl, gs);
+        
         gl.glUseProgram(terrainShader.getProgramID());
         terrain.draw(gl, glu, glut);
 
         gl.glActiveTexture(GL_TEXTURE0);
         gl.glUseProgram(trackShader.getProgramID());
+        gl.glUniform3f(gl.glGetUniformLocation(trackShader.getProgramID(), "cameraPosition"), (float)camera.eye.x(), (float)camera.eye.y(), (float)camera.eye.z());
         texSampler = gl.glGetUniformLocation(trackShader.getProgramID(), "tex");
         gl.glUniform1i(texSampler, 0);
         raceTracks[gs.trackNr].draw(gl, glu, glut);
-        
+
+
         gl.glUseProgram(waterShader.getProgramID());
 
         gl.glUniform3f(gl.glGetUniformLocation(waterShader.getProgramID(), "cameraPosition"), (float)camera.eye.x(), (float)camera.eye.y(), (float)camera.eye.z());
         int reflection = gl.glGetUniformLocation(waterShader.getProgramID(), "reflectionTexture");
         int refraction = gl.glGetUniformLocation(waterShader.getProgramID(), "refractionTexture");
         sunPos = gl.glGetUniformLocation(waterShader.getProgramID(), "sunPosition");
-        gl.glUniform3f(sunPos, (float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z());
+        gl.glUniform3f(sunPos, (float)sun.positionSun.x(), (float)sun.positionSun.y(), (float)sun.positionSun.z());
         gl.glActiveTexture(GL_TEXTURE1);
         gl.glBindTexture(GL_TEXTURE_2D, waterFrameBuffers.getReflectionTexture());
         gl.glUniform1i(reflection, 1);
@@ -389,35 +398,70 @@ public class RobotRace extends Base {
         
         water.draw(gl, glu, glut);
         
+        gl.glUseProgram(defaultShader.getProgramID());
+
+        
+        //DrawTrackBounds();
         //=========================================DRAWING THE ROBOTS (EVERYTHING IN HERE)=================================================
         
-        gl.glUseProgram(robotShader.getProgramID());
-        gl.glActiveTexture(GL_TEXTURE1);
-        Textures.head.bind(gl); // <------ Not working: I think there is a clash somewhere in the Robot class
-        robots[0].draw(gl, glu, glut, 0);
+        // -------------------- UNDER CONSTRUCTION --------------------
+        
+        // Update time variables
+        oldTime = time;
+        time = gs.tAnim;
+                
+        // Calculate the positions of the robots on the track
+        for (int i = 0; i < 4; i++) {
+            robots[i].position = raceTracks[gs.trackNr].getLanePoint(i, (steps[i]) / N);
+            robots[i].direction = raceTracks[gs.trackNr].getLaneTangent(i, steps[i] / N);
+            //System.out.println(raceTracks[gs.trackNr].getLanePoint(i, steps[i]/N).x);
+            
+            steps[i] += (time - oldTime) * speed[i];
+            
+            if(round(steps[i]/speed[i], 1) % round((N/speed[i]), 1) == 0) {
+                steps[i] = 0.0;
+            }
+        }
+        
+        // Start drawing the robots in the scene
+        gl.glPushMatrix();
+        
+        for (int i = 0; i < 4; i++) {
+            gl.glPushMatrix();
+            gl.glTranslated(robots[i].position.x, robots[i].position.y, robots[i].position.z);
+            gl.glRotated(90, 0, 0, 1);
+            //double angle = Math.atan2(robots[i].direction.y, robots[i].direction.x);
 
-        //=========================================SUN POST PROCESS=================================================
+            // Calculate the dot product between the tangent and the Y axis.
+            double dot = robots[i].direction.dot(Vector.Y);
 
+            //Divide by length of y-axis and direction to get cos
+            double cosangle = dot / (robots[i].direction.length() * Vector.Y.length());
+
+            //Check if x is negative of possitive     
+            double angle;
+            if (robots[i].direction.x() >= 0) {
+                angle = -Math.acos(cosangle);
+            } else {
+                angle = Math.acos(cosangle);
+            }
+            gl.glRotated(Math.toDegrees(angle), 0, 0, 1);
+
+            // Rotate bender to stand perpendicular to lange tangent
+            gl.glUseProgram(robotShader.getProgramID());
+            gl.glActiveTexture(GL_TEXTURE0);
+            Textures.head.bind(gl);
+            //robots[0].draw(gl, glu, glut, 0);
+            robots[i].draw(gl, glu, glut, gs.tAnim);
+            
+            gl.glPopMatrix();
+        }
         
-        //gl.glUseProgram(postProcessShader.getProgramID());
+        gl.glPopMatrix();
         
-//        gl.glActiveTexture(GL_TEXTURE0);
-//        gl.glBindTexture(GL_TEXTURE_2D, sun.getSunTexture());
-//        int shaft = gl.glGetUniformLocation(postProcessShader.getProgramID(), "shaftTexture");
-//        gl.glUniform1i(shaft, 0);
+        // -------------------- UNDER CONSTRUCTION --------------------
         
-//        gl.glClear(GL_COLOR_BUFFER_BIT);
-//
-//        gl.glClear(GL_DEPTH_BUFFER_BIT);
-//   
-//        gl.glActiveTexture(GL_TEXTURE1);
-//        gl.glBindTexture(GL_TEXTURE_2D, postProcessing.getToBeProcessed());
-//        int toBeProcessed = gl.glGetUniformLocation(postProcessShader.getProgramID(), "toBeProcessed");
-//        gl.glUniform1i(toBeProcessed, 1);
-        
-        //postProcessing.renderFSQ(gl);
-        
-        
+        //=========================================CELESTIAL BODIES=================================================
         
         if (!sun.isInitialized()) {
             sun.init(gl, gs);
@@ -432,9 +476,27 @@ public class RobotRace extends Base {
         
         gl.glUseProgram(defaultShader.getProgramID()); 
         
-        gl.glColor3f(1,1,0.8f);
+        sun.drawSun(gl, glu, glut);
+        
+        gl.glUseProgram(blackShader.getProgramID());
+        reportError("program:");
 
-        sun.draw(gl, glu, glut);
+        raceTracks[gs.trackNr].draw(gl, glu, glut);
+
+        terrain.draw(gl, glu, glut);
+        
+        reportError("terrain:");
+        
+        sun.bindMoonFBO(gl); 
+        
+        gl.glClearColor(0,0,0,0);
+        
+        gl.glClear(GL_COLOR_BUFFER_BIT);
+        gl.glClear(GL_DEPTH_BUFFER_BIT);
+        
+        gl.glUseProgram(defaultShader.getProgramID()); 
+        
+        sun.drawMoon(gl, glu, glut);
         
         gl.glUseProgram(blackShader.getProgramID());
         reportError("program:");
@@ -447,28 +509,39 @@ public class RobotRace extends Base {
         
         sun.unbindCurrentFBO(gl, gs);
         
-        FloatBuffer screen = FloatBuffer.allocate(3);
         
-        
-        
+        FloatBuffer screenSun = FloatBuffer.allocate(3);
         
         gl.glUseProgram(sunShader.getProgramID());
+        
         gl.glActiveTexture(GL_TEXTURE0);
+        
         gl.glBindTexture(GL_TEXTURE_2D, sun.getSunTexture());
         int shaft = gl.glGetUniformLocation(sunShader.getProgramID(), "shaftTexture");
         gl.glUniform1i(shaft, 0);
         int viewPortPix = gl.glGetUniformLocation(sunShader.getProgramID(), "WH");
         gl.glUniform2f(viewPortPix, gs.w, gs.h);
         
-        glu.gluProject((float)sun.position.x(), (float)sun.position.y(), (float)sun.position.z(), viewM, projM, viewP, screen);
-
+        glu.gluProject((float)sun.positionSun.x(), (float)sun.positionSun.y(), (float)sun.positionSun.z(), viewM, projM, viewP, screenSun);
         int sole = gl.glGetUniformLocation(sunShader.getProgramID(), "screenSun");
-        gl.glUniform2f(sole, screen.get(0), screen.get(1));
-        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        gl.glUniform2f(sole, screenSun.get(0), screenSun.get(1));
+        
+        gl.glBlendFunc(GL_ONE, GL_ONE);
+        
+        gl.glDisable(GL_DEPTH_TEST);
+        
+        sun.renderFSQ(gl);
+
+        gl.glBindTexture(GL_TEXTURE_2D, sun.getMoonTexture());
+
+        glu.gluProject((float)sun.positionMoon.x(), (float)sun.positionMoon.y(), (float)sun.positionMoon.z(), viewM, projM, viewP, screenSun);
+        int luna = gl.glGetUniformLocation(sunShader.getProgramID(), "screenSun");
+        gl.glUniform2f(luna, screenSun.get(0), screenSun.get(1));
+
         sun.renderFSQ(gl);
         
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
+        gl.glEnable(GL_DEPTH_TEST);
     }
     
     /**
@@ -478,10 +551,10 @@ public class RobotRace extends Base {
     public void drawAxisFrame() {
 
         gl.glColor3f(1f, 0f, 0f);
-//        gl.glPushMatrix();
-//        gl.glTranslatef((float)camera.center.x(), (float)camera.center.y(), (float)camera.center.z());
-//        glut.glutSolidSphere(0.15f, 24, 12);
-//        gl.glPopMatrix();
+        gl.glPushMatrix();
+        gl.glTranslatef((float)camera.center.x(), (float)camera.center.y(), (float)camera.center.z());
+        glut.glutSolidSphere(0.15f, 24, 12);
+        gl.glPopMatrix();
         
         gl.glColor3f(1f, 1f, 0f);
         glut.glutSolidSphere(0.3f, 24, 12);
@@ -497,27 +570,25 @@ public class RobotRace extends Base {
         gl.glPopMatrix();
         gl.glColor3f(0f, 0f, 1f);
         drawArrow();
-        
     }
     
     void DrawTrackBounds () {
     
         gl.glBegin(GL_LINES);
         
-        gl.glVertex3f(-20, -20, 0);
-        gl.glVertex3f(20, -20, 0);
+        gl.glVertex3f(-20, -20, 5);
+        gl.glVertex3f(20, -20, 5);
         
-        gl.glVertex3f(20, -20, 0);
-        gl.glVertex3f(20, 20, 0);
+        gl.glVertex3f(20, -20, 5);
+        gl.glVertex3f(20, 20, 5);
         
-        gl.glVertex3f(20, 20, 0);
-        gl.glVertex3f(-20, 20, 0);
+        gl.glVertex3f(20, 20, 5);
+        gl.glVertex3f(-20, 20, 5);
         
-        gl.glVertex3f(-20, 20, 0);
-        gl.glVertex3f(-20, -20, 0);
+        gl.glVertex3f(-20, 20, 5);
+        gl.glVertex3f(-20, -20, 5);
     
         gl.glEnd();
-        
     }
     
     /**
@@ -572,6 +643,16 @@ public class RobotRace extends Base {
         glut.glutSolidCube(1);
     }
     
+    private static double round(double value, int precision) {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
+    }
+    
+    private void setClearColor(Color c) {
+        float[] comps = new float[4];
+        comps = c.getComponents(comps);
+        gl.glClearColor(comps[0], comps[1], comps[2], comps[3]);
+    }
     
     /**
      * Main program execution body, delegates to an instance of

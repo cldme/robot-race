@@ -85,88 +85,33 @@ class Robot {
      */
     public void draw(GL2 gl, GLU glu, GLUT glut, float tAnim) {
         
-        float scale = 10f;
+        this.gl = gl;
+        this.glut = glut;
+        
+        // Link values to body parts attributes (using the hierarchy example)
+        for (BodyPart p : parts) {
+            p.gl = gl;
+            p.glu = glu;
+            p.glut = glut;
+            p.tAnim = tAnim;
+        }
+        
+        // Set the robot material
+        setMaterial(material);
+        
         gl.glPushMatrix();
         
-        gl.glTranslatef(25f, 0, 10f);
-        gl.glScalef(scale,scale,scale);
-        gl.glBegin(GL2.GL_QUADS);
-        
-        // Front Face (up)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, 0.5f);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, 0.5f);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, 0.5f);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, 0.5f);
+        // Translate robot to the correct position in the XOY plane
+        gl.glTranslated(0, 0, 0.4f);
+        // Apply the universal scaling for the robot
+        gl.glScaled(scale, scale, scale);
 
-        // Back Face (down)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, -0.5f);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, -0.5f);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, -0.5f);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, -0.5f);
-
-        // Top Face (front)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-0.5f, 0.5f, 0.5f);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 0.5f, 0.5f, 0.5f);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, -0.5f);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, -0.5f);
-
-        // Bottom Face (back)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, 0.5f);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, 0.5f);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-0.5f, -0.5f, -0.5f);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( 0.5f, -0.5f, -0.5f);
-
-        // Right face (right)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, 0.5f);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( 0.5f, -0.5f, -0.5f);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, -0.5f);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( 0.5f, 0.5f, 0.5f);
-
-        // Left Face (left)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, -0.5f);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-0.5f, -0.5f, 0.5f);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, 0.5f);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-0.5f, 0.5f, -0.5f);
-        
-        gl.glEnd();
+        // Draw the body parts, results in drawing the robot (using the hierarchy example)
+        for(BodyPart p : parts) {
+            p.Draw();
+        }
         
         gl.glPopMatrix();
-//        
-//        
-//        this.gl = gl;
-//        this.glut = glut;
-//        
-//        // Link values to body parts attributes (using the hierarchy example)
-//        for (BodyPart p : parts) {
-//            p.gl = gl;
-//            p.glu = glu;
-//            p.glut = glut;
-//            p.tAnim = tAnim;
-//        }
-//        
-//        // Set the robot material
-//        setMaterial(material);
-//        
-//        gl.glPushMatrix();
-//        
-//        
-//        // Translate robot to the correct position in the XOY plane
-//        gl.glTranslated(position.x(), position.y(), position.z());
-//        // Apply the universal scaling for the robot
-//        gl.glScaled(scale, scale, scale);
-//
-//
-//        
-//
-//        // Draw the body parts, results in drawing the robot (using the hierarchy example)
-//        for(BodyPart p : parts) {
-//            p.Draw();
-//        }
-        
-        
-        
-        //gl.glPopMatrix();
-        
     }
     
     // Function for setting the correct material for a given robot type
