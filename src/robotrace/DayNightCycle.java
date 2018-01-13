@@ -107,8 +107,9 @@ public class DayNightCycle {
 
         gl.glPushMatrix();
         
+
         gl.glTranslatef(-400 * (float)Math.cos(gs.theta), -400 * (float)Math.sin(gs.theta),0);
-        
+
         gl.glGetFloatv(GL2.GL_MODELVIEW_MATRIX , modelview, 0);
 
         modelview[0] = 1.0f;

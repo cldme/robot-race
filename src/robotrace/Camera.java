@@ -54,17 +54,19 @@ class Camera {
      * Computes eye, center, and up, based on the first person mode.
      * The camera should view from the perspective of the robot.
      */
-    private void setFirstPersonMode(GlobalState gs, Robot robot) {
-
-    
-
+    private void setFirstPersonMode(GlobalState gs, Robot robot) {    
+        
+        eye = robot.position.add(new Vector(0,0,1f));
+        center = eye.add(robot.direction);
     }
 
 
     public void invertPitch(GlobalState gs, Water water) {
         
         gs.cnt.z -= 2d * ((float)gs.cnt.z() - water.getHeight());
-        gs.phi *= -1;
+        
+        if(gs.camMode == 0)
+            gs.phi *= -1;
     }
     
     public Vector getPosition () {

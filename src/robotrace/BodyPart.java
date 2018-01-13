@@ -6,6 +6,7 @@ import com.jogamp.opengl.glu.GLU;
 import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.GL2ES3.GL_QUADS;
 import static com.jogamp.opengl.fixedfunc.GLLightingFunc.*;
+import static robotrace.ShaderPrograms.*;
 
 import com.jogamp.opengl.util.texture.Texture;
 import static java.lang.Math.abs;
@@ -70,40 +71,46 @@ public abstract class BodyPart {
         gl.glBegin(GL2.GL_QUADS);
         
         // Front Face (up)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-dim, -dim, dim);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( dim, -dim, dim);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( dim, dim, dim);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-dim, dim, dim);
+        gl.glNormal3i(0,0,1);
+        gl.glVertex3f(-dim, -dim, dim);
+        gl.glVertex3f( dim, -dim, dim);
+        gl.glVertex3f( dim, dim, dim);
+        gl.glVertex3f(-dim, dim, dim);
 
         // Back Face (down)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( dim, -dim, -dim);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-dim, -dim, -dim);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-dim, dim, -dim);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( dim, dim, -dim);
+        gl.glNormal3i(0,0,-1);
+        gl.glVertex3f( dim, -dim, -dim);
+        gl.glVertex3f(-dim, -dim, -dim);
+        gl.glVertex3f(-dim, dim, -dim);
+        gl.glVertex3f( dim, dim, -dim);
 
         // Top Face (front)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-dim, dim, dim);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( dim, dim, dim);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( dim, dim, -dim - dispZ);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-dim, dim, -dim - dispZ);
+        gl.glNormal3i(1,0,0);
+        gl.glVertex3f(-dim, dim, dim);
+        gl.glVertex3f( dim, dim, dim);
+        gl.glVertex3f( dim, dim, -dim - dispZ);
+        gl.glVertex3f(-dim, dim, -dim - dispZ);
 
         // Bottom Face (back)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( dim, -dim, dim);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-dim, -dim, dim);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-dim, -dim, -dim - dispZ);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( dim, -dim, -dim - dispZ);
+        gl.glNormal3i(-1,0,0);
+        gl.glVertex3f( dim, -dim, dim);
+        gl.glVertex3f(-dim, -dim, dim);
+        gl.glVertex3f(-dim, -dim, -dim - dispZ);
+        gl.glVertex3f( dim, -dim, -dim - dispZ);
 
         // Right face (right)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f( dim, -dim, dim);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f( dim, -dim, -dim -dispZ);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f( dim, dim, -dim - dispZ);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f( dim, dim, dim);
+        gl.glNormal3i(0,1,0);
+        gl.glVertex3f( dim, -dim, dim);
+        gl.glVertex3f( dim, -dim, -dim -dispZ);
+        gl.glVertex3f( dim, dim, -dim - dispZ);
+        gl.glVertex3f( dim, dim, dim);
 
         // Left Face (left)
-        gl.glTexCoord2f(0.0f, 0.0f); gl.glVertex3f(-dim, -dim, -dim - dispZ);
-        gl.glTexCoord2f(1.0f, 0.0f); gl.glVertex3f(-dim, -dim, dim);
-        gl.glTexCoord2f(1.0f, 1.0f); gl.glVertex3f(-dim, dim, dim);
-        gl.glTexCoord2f(0.0f, 1.0f); gl.glVertex3f(-dim, dim, -dim - dispZ);
+        gl.glNormal3i(0,-1,0);
+        gl.glVertex3f(-dim, -dim, -dim - dispZ);
+        gl.glVertex3f(-dim, -dim, dim);
+        gl.glVertex3f(-dim, dim, dim);
+        gl.glVertex3f(-dim, dim, -dim - dispZ);
         
         gl.glEnd();
     }
@@ -146,6 +153,7 @@ public abstract class BodyPart {
         glut.glutSolidCone(radius, height, slices, stacks);
     }
     
+    
     /**
      * Function that sets the parts material
      * 
@@ -184,6 +192,7 @@ class Head extends BodyPart {
         // Enable and bind texture
 //        texture.enable(gl);
 //        texture.bind(gl);
+        this.setMaterial(this.material);
         
         // Translate head to correct position
         gl.glTranslated(0, 0, this.length + 7f);
@@ -191,12 +200,12 @@ class Head extends BodyPart {
         gl.glRotated(90, 1, 0, 0);
         
         // -------------------- DRAW ROBOT HEAD (textured cube) ----------
-        this.SolidCube(3f, 0);
+        glut.glutSolidCube(6);
         // -------------------- DRAW ROBOT HEAD (textured cube) ----------
         
         
         // Disable OpenGL texture
-        texture.disable(gl);
+        //texture.disable(gl);
         // Pop view matrix from the top of the stack
         gl.glPopMatrix();
     }
@@ -228,8 +237,9 @@ class Body extends BodyPart {
         gl.glPushMatrix();
         
         // Enable and bind texture
-        texture.enable(gl);
-        texture.bind(gl);
+//        texture.enable(gl);
+//        texture.bind(gl);
+        this.setMaterial(this.material);
         
         //Translate body to correct position
         gl.glTranslated(0, 0, this.length);
@@ -246,7 +256,7 @@ class Body extends BodyPart {
         this.SolidCylinder((double) 3 * 0.75, this.length * 0.60);
         
         // Disable OpenGL texture
-        texture.disable(gl);
+//        texture.disable(gl);
         // Pop view matrix from the top of the stack
         gl.glPopMatrix();
     }

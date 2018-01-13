@@ -317,7 +317,7 @@ abstract class RaceTrack {
      */
     public Vector getLaneTangent(int lane, double t){
         
-        Vector tangent = getTangent(t).cross(new Vector (0f,0f,1f)).normalized();
+        Vector tangent = getTangent(t);
         
         return tangent;
 
