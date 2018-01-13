@@ -101,14 +101,18 @@ public class DayNightCycle {
         gl.glColor3f(comps[0], comps[1], comps[2]);
     }
     
-    public void drawSky (GL2 gl, GlobalState gs, float time) {
+    public void drawSky (GL2 gl, GlobalState gs, float time, Robot robot) {
     
         float modelview[] = new float[16];
 
         gl.glPushMatrix();
         
-
+        if(gs.camMode == 0) {
         gl.glTranslatef(-400 * (float)Math.cos(gs.theta), -400 * (float)Math.sin(gs.theta),0);
+        } else {
+        Vector trans = robot.direction.scale(10);
+        gl.glTranslated(trans.x(),trans.y(),trans.z());
+        }
 
         gl.glGetFloatv(GL2.GL_MODELVIEW_MATRIX , modelview, 0);
 

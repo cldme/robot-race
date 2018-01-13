@@ -56,17 +56,20 @@ class Camera {
      */
     private void setFirstPersonMode(GlobalState gs, Robot robot) {    
         
-        eye = robot.position.add(new Vector(0,0,1f));
-        center = eye.add(robot.direction);
+        
+
     }
 
 
     public void invertPitch(GlobalState gs, Water water) {
         
-        gs.cnt.z -= 2d * ((float)gs.cnt.z() - water.getHeight());
+        center.z -= 2d * ((float)center.z() - water.getHeight());
         
-        if(gs.camMode == 0)
-            gs.phi *= -1;
+        if(gs.camMode == 1) {
+        eye.z -= 2d * ((float)eye.z() - water.getHeight());
+        }
+        
+        gs.phi *= -1;
     }
     
     public Vector getPosition () {

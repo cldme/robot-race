@@ -16,7 +16,7 @@ abstract class RaceTrack {
     /** The width of one lane. The total width of the track is 4 * laneWidth. */
     private final static float laneWidth = 1.22f;
     private final static int resolution = 200;
-    private final static int repeats = 50;
+    private final static int repeats = 30;
     
     /**
      * Constructor for the default track.

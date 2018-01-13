@@ -250,7 +250,7 @@ public class RobotRace extends Base {
         
         gl.glLoadIdentity();
         
-        camera.update(gs, robots[1]);
+        camera.update(gs, robots[0]);
         
         // Update the view according to the camera mode and robot of interest.
         // For camera modes 1 to 4, determine which robot to focus on.
@@ -291,6 +291,13 @@ public class RobotRace extends Base {
         
         gl.glEnable(GL_CLIP_DISTANCE0);
 
+        
+        if (gs.camMode == 1) {
+            
+            camera.eye = robots[0].position.add(new Vector(0,0,1f));
+            camera.center = camera.eye.add(robots[0].direction);
+        }
+        
         camera.invertPitch(gs, water);
         setView();
         
@@ -318,9 +325,10 @@ public class RobotRace extends Base {
         sun.drawMoon(gl, glu, glut);
         camera.invertPitch(gs, water);
         setView();
+        
 
         gl.glUseProgram(defaultShader.getProgramID());
-        dayNightCycle.drawSky(gl, gs, dayTime);
+        dayNightCycle.drawSky(gl, gs, dayTime, robots[0]);
         
         
         
@@ -357,7 +365,7 @@ public class RobotRace extends Base {
 
         gl.glUseProgram(defaultShader.getProgramID());
         
-        dayNightCycle.drawSky(gl, gs, dayTime);
+        dayNightCycle.drawSky(gl, gs, dayTime,robots[0]);
         
         gl.glUseProgram(moonShader.getProgramID());
         gl.glActiveTexture(GL_TEXTURE0);
