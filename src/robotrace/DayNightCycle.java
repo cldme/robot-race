@@ -111,7 +111,7 @@ public class DayNightCycle {
         gl.glTranslatef(-400 * (float)Math.cos(gs.theta), -400 * (float)Math.sin(gs.theta),0);
         } else {
         Vector trans = robot.direction.scale(10);
-        gl.glTranslated(trans.x(),trans.y(),trans.z());
+        gl.glTranslated(trans.x(),trans.y(),0);
         }
 
         gl.glGetFloatv(GL2.GL_MODELVIEW_MATRIX , modelview, 0);
@@ -124,8 +124,6 @@ public class DayNightCycle {
         modelview[6] = 0;
         
         gl.glLoadMatrixf(modelview, 0);
-        
-        
         
         gl.glBegin(GL2.GL_QUAD_STRIP);
         Color c = getSkyColor(time, 4);

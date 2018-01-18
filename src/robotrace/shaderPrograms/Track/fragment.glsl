@@ -27,7 +27,7 @@ return result/3;
 void main()
 {
 
-    gl_FragColor = vec4(VaryingTexCoord0.st - floor(VaryingTexCoord0.st),0,1); //shading(P, N) + texture2D(tex, VaryingTexCoord0.st); // //
+    gl_FragColor = shading(P, N) + texture2D(tex, VaryingTexCoord0.st); //vec4(VaryingTexCoord0.st - floor(VaryingTexCoord0.st),0,1); // // //
 
 	
 }

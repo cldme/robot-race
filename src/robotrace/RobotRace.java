@@ -83,7 +83,7 @@ public class RobotRace extends Base {
     // Array for tracking number of steps done by robots
     private Double[] steps = {0.0, 0.0, 0.0, 0.0};
     // Array for storing robots speed
-    private Double[] speed = {250.0, 450.0, 350.0, 150.0};
+    private Double[] speed = {250.0, 150.0, 350.0, 450.0};
     // Total number of steps taken by the robots in one lap (can be tweaked)
     private Double N = 10000d;
     
@@ -101,6 +101,7 @@ public class RobotRace extends Base {
     FloatBuffer projM = FloatBuffer.allocate(16);
     IntBuffer viewP = IntBuffer.allocate(4);
     boolean test = false;
+    int slowestRobotIdx = 0;
 
     /**
      * Constructs this robot race by initializing robots,
@@ -124,58 +125,37 @@ public class RobotRace extends Base {
         float g = 3.5f;
         raceTracks[1] = new BezierTrack(
                 
-            new Vector[] { new Vector(16f, -2.379993f, 0f),
-                           new Vector(17.03568f,6.612997f,-0.4572847f),
-                           new Vector(15.39956f,14.51239f,0f),
-                           new Vector(10.0101f,16.87626f,0f),
-                           new Vector(5.178312f,18.99553f,0f),
-                           new Vector(0.7413831f,15.13234f,0f),
-                           new Vector(-1.365651f,12.43286f,0f),
-                           new Vector(-4.521659f,8.38945f,0f),
-                           new Vector(-9.067448f,0.2013298f,0f),
-                           new Vector(0.4023554f,-1.109114f,0f),
-                           new Vector(4.620424f,-1.692816f,0f),
-                           new Vector(9.506009f,2.844918f,0f),
-                           new Vector(6.446103f,5.99296f,0f),
-                           new Vector(4.939413f,7.543048f,0f),
-                           new Vector(1.486183f,9.50538f,-4.580544f),
-                           new Vector(-2.880064f,12.11383f,-3.134924f),
-                           new Vector(-12.34857f,17.77042f,0f),
-                           new Vector(-21.53945f,13.99727f,0f),
-                           new Vector(-13.84152f,5.419401f,0f),
-                           new Vector(-10.30898f,1.483055f,0f),
-                           new Vector(-5.282493f,-3.16907f,4.840358f),
-                           new Vector(-11.78699f,-8.081102f,2.397926f),
-                           new Vector(-14.41224f,-10.06362f,1.412148f),
-                           new Vector(-16.80755f,-16.73213f,2.397926f),
-                           new Vector(-10.1092f,-16.73213f,2.397926f),
-                           new Vector(-9.10943f,-16.73213f,2.397926f),
-                           new Vector(-8.61202f,-16.73213f,3.641369f),
-                           new Vector(-5.448234f,-16.73213f,7.430427f),
-                           new Vector(-4.807303f,-16.73213f,8.198026f),
-                           new Vector(0.1789123f,-16.73213f,8.577466f),
-                           new Vector(1.178912f,-16.73213f,7.430427f),
-                           new Vector(1.836054f,-16.73213f,6.67666f),
-                           new Vector(2.342921f,-16.73213f,0.2505693f),
-                           new Vector(6.382141f,-16.73213f,0.2505693f),
-                           new Vector(9.877653f,-16.73213f,0.2505693f),
-                           new Vector(12.81498f,-15.94569f,0.2505693f),
-                           new Vector(14.32221f,-12.64111f,0.2505693f),
-                           new Vector(15.11011f,-10.91366f,0.2505693f),
-                           new Vector(15.4325f,-7.307707f,0.2505693f),
-                           new Vector(16f,-2.379993f,0f)
+            new Vector[] { new Vector(0,17,3),
+                           new Vector(-6,17,3),
+                           new Vector(-9.464102,8.392304,8),
+                           new Vector(-3.464102,-2,3),
+                           new Vector(2.535898,-12.3923,-2),
+                           new Vector(11.72243,-13.69615,3),
+                           new Vector(14.72243,-8.5,3),
+                           new Vector(17.72243,-3.303847,3),
+                           new Vector(12,4,8),
+                           new Vector(0,4,3),
+                           new Vector(-12,4,-2),
+                           new Vector(-17.72243,-3.303847,3),
+                           new Vector(-14.72243,-8.5,3),
+                           new Vector(-11.72243,-13.69615,3),
+                           new Vector(-2.535898,-12.3923,8),
+                           new Vector(3.464102,-2,3),
+                           new Vector(9.464102,8.392304,-2),
+                           new Vector(6,17,3),
+                           new Vector(0,17,3)
             }              
         );
         
         terrain = new Terrain(TerrainUtility.getSubdivisions(), TerrainUtility.getPatches());
         
-        sun = new CelestialBodies(new Vector(100,0,25), new Vector(100,0,25), 20);
+        sun = new CelestialBodies(new Vector(100,0,25), new Vector(100,0,25), 120);
         
         water = new Water(new Vector(0,0,0.5f), 150);
         
         waterFrameBuffers = new WaterFrameBuffers();
         
-        dayNightCycle = new DayNightCycle(20);
+        dayNightCycle = new DayNightCycle(120); 
     }
     
     /**
@@ -294,8 +274,18 @@ public class RobotRace extends Base {
         
         if (gs.camMode == 1) {
             
-            camera.eye = robots[0].position.add(new Vector(0,0,1f));
-            camera.center = camera.eye.add(robots[0].direction);
+            double min = speed[0];
+
+            for (int i = 0; i < 4; i++) {
+
+                if (speed[i] < min) {
+                    min = speed[i];
+                    slowestRobotIdx = i;
+                }
+            }
+            
+            camera.eye = robots[slowestRobotIdx].position.add(new Vector(0,0,1f));
+            camera.center = camera.eye.add(robots[slowestRobotIdx].direction);
         }
         
         camera.invertPitch(gs, water);
@@ -328,7 +318,7 @@ public class RobotRace extends Base {
         
 
         gl.glUseProgram(defaultShader.getProgramID());
-        dayNightCycle.drawSky(gl, gs, dayTime, robots[0]);
+        dayNightCycle.drawSky(gl, gs, dayTime, robots[slowestRobotIdx]);
         
         
         
@@ -364,8 +354,11 @@ public class RobotRace extends Base {
         sun.moveMoon(dayTime);
 
         gl.glUseProgram(defaultShader.getProgramID());
+        if (gs.showAxes) {
         
-        dayNightCycle.drawSky(gl, gs, dayTime,robots[0]);
+            drawAxisFrame();
+        }
+        dayNightCycle.drawSky(gl, gs, dayTime,robots[slowestRobotIdx]);
         
         gl.glUseProgram(moonShader.getProgramID());
         gl.glActiveTexture(GL_TEXTURE0);
@@ -418,7 +411,11 @@ public class RobotRace extends Base {
         gl.glUseProgram(robotShader.getProgramID());
         robotDraw();
         
+        gl.glUseProgram(defaultShader.getProgramID());
+        
         //DrawTrackBounds();
+        
+        
         
         //=========================================CELESTIAL BODIES=================================================
         
@@ -508,15 +505,9 @@ public class RobotRace extends Base {
      * and origin (yellow).
      */
     public void drawAxisFrame() {
-
-        gl.glColor3f(1f, 0f, 0f);
-        gl.glPushMatrix();
-        gl.glTranslatef((float)camera.center.x(), (float)camera.center.y(), (float)camera.center.z());
-        glut.glutSolidSphere(0.15f, 24, 12);
-        gl.glPopMatrix();
         
         gl.glColor3f(1f, 1f, 0f);
-        glut.glutSolidSphere(0.3f, 24, 12);
+        glut.glutSolidSphere(0.15f, 24, 12);
         gl.glColor3f(1f, 0f, 0f);
         gl.glPushMatrix();
         gl.glRotatef(90f, 0f, 1f, 0f);
@@ -555,8 +546,8 @@ public class RobotRace extends Base {
      */
     public void drawArrow() {
         gl.glPushMatrix();
-        glut.glutSolidCylinder(0.05f, 1f, 12, 6);
-        gl.glTranslatef(0f, 0f, 1f);
+        glut.glutSolidCylinder(0.05f, 0.5f, 12, 6);
+        gl.glTranslatef(0f, 0f, 0.5f);
         glut.glutSolidCone(0.2f, 0.5f, 12, 6);
         gl.glPopMatrix();
     }
