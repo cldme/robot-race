@@ -305,7 +305,8 @@ public class RobotRace extends Base {
         raceTracks[gs.trackNr].draw(gl, glu, glut);
         
         gl.glUseProgram(robotShader.getProgramID());
-        robotDraw();
+        drawRobot();
+        drawTree();
         
         gl.glUseProgram(defaultShader.getProgramID());
         gl.glColor3f(1,1,0.8f);
@@ -409,7 +410,8 @@ public class RobotRace extends Base {
         water.draw(gl, glu, glut);
         
         gl.glUseProgram(robotShader.getProgramID());
-        robotDraw();
+        drawRobot();
+        drawTree();
         
         gl.glUseProgram(defaultShader.getProgramID());
         
@@ -618,7 +620,28 @@ public class RobotRace extends Base {
         robotRace.run();
     }
     
-    public void robotDraw() {
+    // Function that draws trees in the scene
+    public void drawTree() {
+        gl.glPushMatrix();
+        gl.glColor3d(0, 0.3, 0);
+        gl.glTranslated(0, 0, 1.4);
+        glut.glutSolidCone(1, 3, 10, 6);
+        gl.glPopMatrix();
+
+        gl.glPushMatrix();
+        gl.glColor3d(0, 0.3, 0);
+        gl.glTranslated(0, 0, 3.3);
+        glut.glutSolidCone(0.5, 1.5, 10, 6);
+        gl.glPopMatrix();
+
+        gl.glPushMatrix();
+        gl.glColor3d(0.545, 0.271, 0.0745);
+        gl.glTranslated(0, 0, 0.9);
+        glut.glutSolidCylinder(0.3, 1, 18, 1);
+        gl.glPopMatrix();
+    }
+    
+    public void drawRobot() {
     
     //=========================================DRAWING THE ROBOTS (EVERYTHING IN HERE)=================================================
         
