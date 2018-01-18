@@ -196,13 +196,33 @@ class Head extends BodyPart {
         
         // Translate head to correct position
         gl.glTranslated(0, 0, this.length + 7f);
-        // Rotate head to match texture orientation
-        gl.glRotated(90, 1, 0, 0);
         
         // -------------------- DRAW ROBOT HEAD (textured cube) ----------
         glut.glutSolidCube(6);
         // -------------------- DRAW ROBOT HEAD (textured cube) ----------
         
+        // Draw the robot's antenna
+        gl.glPushMatrix();
+        gl.glScaled(1.5, 1.5, 1.5);
+        gl.glTranslated(0, 0, foreheadRadius);
+        // Draw a cone to be the antenna
+        this.SolidCone(antennaBaseRadius * 0.75, antennaBaseRadius * 6);
+        // Draw a (hemi)sphere
+        this.SolidSphere(antennaBaseRadius);
+        // Translate to top of antenna cone
+        gl.glTranslated(0, 0, antennaBaseRadius * 5);
+        // Draw the top sphere of the antenna
+        this.SolidSphere(antennaBaseRadius / 2);
+        gl.glPopMatrix();
+        
+        // Draw the robot's eyes
+        this.setMaterial(Material.WHITE1);
+        gl.glPushMatrix();
+        gl.glTranslated(1.25, 3, 1);
+        this.SolidSphere(0.5);
+        gl.glTranslated(-2.5, 0, 0);
+        this.SolidSphere(0.5);
+        gl.glPopMatrix();
         
         // Disable OpenGL texture
         //texture.disable(gl);

@@ -63,6 +63,11 @@ public enum Material {
         32.0f
     ),
     
+    WHITE1 (
+        new float[] {1.0f, 1.0f, 1.0f, 1.0f},
+        new float[] {1.0f, 1.0f, 1.0f, 1.0f},     
+      100f),
+    
     /**
      * Black material properties
      */
