@@ -306,7 +306,7 @@ public class RobotRace extends Base {
         
         gl.glUseProgram(robotShader.getProgramID());
         drawRobot();
-        drawTree();
+        drawTree(0, 0, 0);
         
         gl.glUseProgram(defaultShader.getProgramID());
         gl.glColor3f(1,1,0.8f);
@@ -411,7 +411,7 @@ public class RobotRace extends Base {
         
         gl.glUseProgram(robotShader.getProgramID());
         drawRobot();
-        drawTree();
+        drawTree(0, 0 ,0);
         
         gl.glUseProgram(defaultShader.getProgramID());
         
@@ -621,8 +621,9 @@ public class RobotRace extends Base {
     }
     
     // Function that draws trees in the scene
-    public void drawTree() {
+    public void drawTree(double x, double y, double z) {
         gl.glPushMatrix();
+        gl.glTranslated(x, y, z);
         gl.glColor3d(0, 0.3, 0);
         gl.glTranslated(0, 0, 1.4);
         glut.glutSolidCone(1, 3, 10, 6);
